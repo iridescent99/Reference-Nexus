@@ -15,7 +15,7 @@ export class Connector {
 
         // What is limit of pager??
         await fetch(
-            `https://www.googleapis.com/books/v1/volumes?q=${query}&key=AIzaSyAbthJRVTCqm1mNFFRjxhwo9hi6m2XTl0c`
+            `https://www.googleapis.com/books/v1/volumes?q=${query}&key=`
         ).then((resp) => resp.json())
             .then((data) => this.modal.setResults(this.transformGoogleOutput(data.items)))
             .catch(error => console.error('Error:', error));
@@ -48,7 +48,7 @@ export class Connector {
     async getArticles( query: string ) {
         // TODO: CORS blocked
         await fetch(
-            `https://newsapi.org/v2/everything?q=${query}&apiKey=d43aee2f537248379bf12ba5a0ff629c`
+            `https://newsapi.org/v2/everything?q=${query}&apiKey=`
         ).then((resp) => console.log(resp.json()))
             // .then((data) => this.modal.setResults(this.transformNewsAPIOutput(data.articles)));
             .catch(error => console.error('Error:', error));
