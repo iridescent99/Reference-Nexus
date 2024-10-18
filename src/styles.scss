@@ -1,0 +1,21 @@
+.reference-container {
+  padding:1em;
+  margin-top:.5em;
+  border: .02em solid grey;
+  border-radius: 10px;
+
+  .reference-type {
+    opacity: 70%;
+  }
+  .reference-title {
+    font-size: large;
+  }
+}
+
+.reference-view-search {
+  width:100%;
+  border-radius: 10px;
+  padding:.3em 1em;
+  border:none;
+
+}

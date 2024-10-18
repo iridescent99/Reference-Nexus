@@ -13,7 +13,6 @@ import ReferenceNexus from "../index";
 import {Reference} from "../reference_nexus";
 import {ReferenceTypePicker} from "./typePicker";
 import {ReferenceType} from "./typePicker";
-import {getBooks} from "../api/googleBooks";
 import {Connector} from "../api/connector";
 
 export class ReferenceSearch extends FuzzySuggestModal<Reference> {
@@ -57,6 +56,8 @@ export class ReferenceSearch extends FuzzySuggestModal<Reference> {
 
         const clearButton = this.containerEl.getElementsByClassName("search-input-clear-button")[0];
 
+
+        // TODO: add button for custom add
         this.searchButton = this.contentEl.createEl("button", { text: "search" });
         this.searchButton.style.marginRight = "4em";
         this.searchButton.style.marginTop = ".8em";
@@ -130,7 +131,8 @@ export class ReferenceSearch extends FuzzySuggestModal<Reference> {
     }
 
     onChooseItem(item: Reference, evt: MouseEvent | KeyboardEvent) {
-
+        this.plugin.referenceManager.addReference( item )
+            .catch((e) => console.log(e))
     }
 
     getItemText(item: Reference): string {

@@ -1,5 +1,5 @@
 import {ReferenceSearch} from "../search/referenceSearch";
-
+import * as crypto from "crypto";
 
 export class Connector {
 
@@ -15,7 +15,7 @@ export class Connector {
 
         // What is limit of pager??
         await fetch(
-            `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.modal.plugin.settings.apiKeys.googleBooks}`
+            `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.modal.plugin.settings.apiKeys.googleBooks.key}`
         ).then((resp) => resp.json())
             .then((data) => this.modal.setResults(this.transformGoogleOutput(data.items)))
             .catch(error => console.error('Error:', error));
@@ -24,10 +24,16 @@ export class Connector {
 
     transformGoogleOutput( data: any[] ) {
         return data.map((item) => {
-            return {
+            const formatted = {
                 title: item.volumeInfo.title,
                 authors: item.volumeInfo.authors,
-                type: "book"
+                type: "book",
+
+            }
+            return {
+                id: this.generateHash( JSON.stringify(formatted) ),
+                ...formatted,
+                metrics: this.modal.plugin.settings.metrics["book"]
             }
         })
     }
@@ -48,18 +54,29 @@ export class Connector {
     async getArticles( query: string ) {
         // TODO: CORS blocked
         await fetch(
-            `https://newsapi.org/v2/everything?q=${query}&apiKey=${this.modal.plugin.settings.apiKeys.newsApi}`
+            `https://newsapi.org/v2/everything?q=${query}&apiKey=${this.modal.plugin.settings.apiKeys.newsApi.key}`
         ).then((resp) => console.log(resp.json()))
             // .then((data) => this.modal.setResults(this.transformNewsAPIOutput(data.articles)));
             .catch(error => console.error('Error:', error));
     }
 
+    private generateHash( data: string ) {
+        return crypto.createHash('sha256').update(data).digest('hex');
+    }
+
     transformNewsAPIOutput( data: any [] ) {
+
         return data.map((item) => {
-            return {
+            const formatted = {
                 title: item.title,
                 authors: item.author,
+                platform: item.platform,
                 type: "article"
+            }
+            return {
+                id: this.generateHash( JSON.stringify(formatted) ),
+                ...formatted,
+                metrics: this.modal.plugin.settings.metrics["article"]
             }
         })
     }
