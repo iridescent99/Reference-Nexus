@@ -23,12 +23,14 @@ export class ReferenceSearch extends FuzzySuggestModal<Reference> {
     private referenceType: ReferenceType;
     private searchButton: HTMLButtonElement;
     private callback: Function;
+    public plugin: ReferenceNexus;
     private results: any[] = [];
     private connector: Connector;
 
-    constructor( private plugin: ReferenceNexus ) {
+    constructor( plugin: ReferenceNexus ) {
 
         super(plugin.app);
+        this.plugin = plugin;
 
         this.connector = new Connector(this);
 

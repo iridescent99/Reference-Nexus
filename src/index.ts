@@ -3,10 +3,12 @@ import {Metric, Settings} from "./reference_nexus";
 import {NexusSettingsTab} from "./settings";
 import {ReferenceSearch} from "./search/referenceSearch";
 
-
-
 export const DEFAULT_SETTINGS: Settings = {
-    metrics: []
+    metrics: [],
+    apiKeys: {
+        googleBooks: "",
+        newsApi: ""
+    }
 }
 
 export default class ReferenceNexus extends Plugin {

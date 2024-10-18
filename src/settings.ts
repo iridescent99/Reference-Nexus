@@ -28,7 +28,15 @@ export class NexusSettingsTab extends PluginSettingTab {
                 .addText((cb) => cb.setPlaceholder("unit, e.g. chapter, page"))
         }
 
+        this.configContainer.createEl('h3', {text:'API Keys'});
+        const apiDiv = this.configContainer.createDiv({text: "API Keys for finding matching reference types."});
 
+        for (let [key, value] of Object.entries(this.plugin.settings.apiKeys)) {
+            new Setting(apiDiv)
+                .setName(key)
+                .setHeading()
+                .addText((cb) => cb.setPlaceholder(value))
+        }
 
 
 

@@ -1,5 +1,9 @@
+import {ReferenceType} from "./search/typePicker";
 
-
+interface ApiKeySet {
+    googleBooks: string;
+    newsApi: string;
+}
 
 interface Metric {
     name: string;
@@ -8,7 +12,8 @@ interface Metric {
 }
 
 interface Settings {
-    metrics: Metric[]
+    metrics: Metric[],
+    apiKeys: ApiKeySet
 }
 
 interface Reference {
