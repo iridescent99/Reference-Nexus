@@ -1,6 +1,8 @@
 import {ReferenceType} from "./search/typePicker";
+import {TFile} from "obsidian";
 
 interface KeyConfig {
+    [key: string]: string;
     key: string;
     url: string;
 }
@@ -14,9 +16,10 @@ interface ApiKeySet {
 interface Metric {
     name: string;
     unit: string|null;
-    binary: boolean;
+    isBinary: boolean;
     totalUnits: number;
     currentUnit: number;
+    completed: boolean;
 }
 
 interface ReferenceMetric {
@@ -34,12 +37,25 @@ interface Settings {
     referencesLocation: string
 }
 
+interface ObsidianLink {
+    [key: string]: any;
+    file: TFile;
+
+}
+
+interface Metadata {
+    creationDate: Date;
+    lastUpdated: Date;
+}
+
 interface Reference {
     id: string;
     title: string;
     authors: string[];
+    meta:Metadata;
     type: ReferenceType;
     metrics: Metric[];
+    links: ObsidianLink[];
 }
 
 

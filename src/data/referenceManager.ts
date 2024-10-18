@@ -31,11 +31,17 @@ export class ReferenceManager {
         console.log(this.references)
     }
 
+    private referenceExists( id: string ) {
+        return this.references.filter((reference: Reference) => reference.id === id).length > 0;
+    }
+
     public async addReference( reference: Reference ) {
-        this.references.unshift( reference );
-        return await this.writeReference( reference )
-            .then(() => this.plugin.activateView())
-            .catch((e) => console.log(e));
+        if (!this.referenceExists( reference.id )) {
+            this.references.unshift( reference );
+            return await this.writeReference( reference )
+                .then(() => this.plugin.activateView())
+                .catch((e) => console.log(e));
+        }
     }
 
     async writeReference( reference: Reference ) {

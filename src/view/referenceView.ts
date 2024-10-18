@@ -1,12 +1,14 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
 import ReferenceNexus from "../index";
 import "./view.css";
+import {ReferenceCard} from "./referenceCard";
 
 export const VIEW_TYPE_CUSTOM = "reference-view";
 
 export class ReferenceView extends ItemView {
 
     plugin: ReferenceNexus;
+    private onDestroy: Function[] = [];
 
     constructor( plugin: ReferenceNexus, leaf: WorkspaceLeaf ) {
         super(leaf);
@@ -31,22 +33,20 @@ export class ReferenceView extends ItemView {
         this.contentEl.createEl("h2", { text: "Reference view" })
         this.contentEl.createEl("input", { placeholder: "search reference.. ", cls: "reference-view-search"})
         for (let reference of this.plugin.referenceManager.references) {
-            const container = this.contentEl.createDiv({cls: "reference-container"});
-            container.createDiv({text: reference.title, cls: "reference-title"}).style.fontStyle = "italic";
-            container.createDiv({text: reference.authors.join(", "), cls: "reference-authors"});
-            container.createDiv({text: reference.type, cls: "reference-type"})
-            const metrics = container.createDiv({cls: "reference-metrics"});
-            for (let metric of reference.metrics) {
-                const metricContainer = metrics.createDiv( {cls: `metric-container-${metric}`} );
-                metricContainer.createDiv({ cls: `metric-${metric}` })
-            }
+
+            new ReferenceCard( this, reference )
+
         }
         // const description = container.createEl('p', { text: 'This is a custom side pane in Obsidian!' });
     }
 
+    onunload() {
+        this.onDestroy.forEach((fn: Function) => fn());
+        super.onunload();
+    }
 
-    protected onClose(): Promise<void> {
-        this.leaf.detach();
+    addOnUnload( fn: Function ) {
+        this.onDestroy.push(fn);
     }
 
 }
