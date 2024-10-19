@@ -60,8 +60,10 @@ export class ObsidianDiv extends HTMLDivElement {
     }
 
     // Make into button element that is customisabel
-    addButton( text: string ) {
-        this.appendChild(this.createEl("button", { text: text } ));
+    addButton( fn: (btn: HTMLButtonElement) => any ) {
+        const btn = this.createEl("button");
+        fn(btn);
+        this.appendChild(btn);
         return this;
     }
 
@@ -79,7 +81,6 @@ export class ObsidianDiv extends HTMLDivElement {
                     cb.setValue(metric.name)
                         .onChange((val: string) => {
                             metric.setName(val)
-                            if (val.includes("read") && reference.pageCount) metric.setTotalUnits(reference.pageCount)
                         })
                 })
         }))
@@ -94,13 +95,13 @@ export class ObsidianDiv extends HTMLDivElement {
                 setting.setName("total units")
                     .addText((cb) => {
                         cb.setValue((metric.name.includes("read") && reference.unit === "chapter" && reference.pageCount?.toString()) || metric.totalUnits?.toString() || "-1")
-                            .onChange((val: string) => metric.setTotalUnits(parseInt(val)))
+                            .onChange((val: string) => {
+                                console.log(metric)
+                                metric.setTotalUnits(parseInt(val))
+                            })
                     })
             }))
-            .setStyle({
-            overflowY: "scroll",
-            maxHeight: "20em"
-        })
+
         return this;
     }
 

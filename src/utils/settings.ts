@@ -36,7 +36,6 @@ export class NexusSettingsTab extends PluginSettingTab {
         const apiDiv = this.configContainer.createDiv({text: "API Keys for finding matching reference types."});
 
         for (let [key, value] of Object.entries(this.plugin.settings.apiKeys)) {
-            console.log(value)
             new Setting(apiDiv)
                 .setName(key)
                 .setDesc(`Register for an API key at ${value.url}`)

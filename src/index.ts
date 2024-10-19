@@ -11,13 +11,15 @@ import {MetricDiv} from "./view/metricDiv";
 import {ReferencePropertyDiv} from "./view/referencePropertyDiv";
 import {ReferenceMetric} from "./view/metric";
 import {Tooltip} from "./view/tooltip";
-import {GenericDiv, ObsidianDiv} from "./utils/obsidianDiv";
+import {ObsidianDiv} from "./utils/obsidianDiv";
+import {ReferenceEnricher} from "./data/referenceEnricher";
 
 
 export default class ReferenceNexus extends Plugin {
 
     settings: Settings;
     referenceManager: ReferenceManager;
+    referenceEnricher: ReferenceEnricher;
 
     async onload() {
 
@@ -39,6 +41,7 @@ export default class ReferenceNexus extends Plugin {
     initialize() {
 
         this.referenceManager = new ReferenceManager(this);
+        this.referenceEnricher = new ReferenceEnricher(this);
         this.referenceManager.loadReferences();
 
         this.addSettingTab(new NexusSettingsTab(this.app, this));

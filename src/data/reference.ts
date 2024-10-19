@@ -19,17 +19,15 @@ export class Reference implements IReference {
 
     constructor( plugin: ReferenceNexus, args: any ) {
         for ( let [key, value] of Object.entries(args)) {
-            console.log(key, value)
-
             if (Object.prototype.hasOwnProperty.call(this, key)) { // @ts-ignore
                 this[key] = value;
             }
         }
-        this.metrics = plugin.settings.metrics[this.type];
+        this.metrics = plugin.settings.metrics[this.type].map((config: any) => new Metric(config.name, config.unit));
     }
 
     createMetric() {
-        this.metrics.push(new Metric());
+        this.metrics.push(new Metric( "reading", "chapter" ));
     }
 
     private generateHash( ) {

@@ -6,12 +6,14 @@ import {ObsidianDiv} from "../utils/obsidianDiv";
 
 export class ReferenceEnricher extends Modal {
 
-    private callback: Function;
+    private callback: Function = () => {};
     private reference: IReference;
     private window: ObsidianDiv
+    plugin: ReferenceNexus;
 
     constructor( plugin: ReferenceNexus ) {
         super(plugin.app);
+        this.plugin = plugin;
         Object.setPrototypeOf(this.containerEl.children[1], ObsidianDiv.prototype)
         this.window = this.containerEl.children[1] as ObsidianDiv;
     }
@@ -32,6 +34,12 @@ export class ReferenceEnricher extends Modal {
                 // background: "pink"
             })
             .setTitle("Reference Enricher")
+        this.setUpReferenceConfig();
+        this.setUpMetricConfig();
+    }
+
+    setUpReferenceConfig( ) {
+        this.window
             .createContainer((div) => {
                 div
                     .setHeading(this.reference.title, "h3")
@@ -60,17 +68,45 @@ export class ReferenceEnricher extends Modal {
                         .addLine()
                 }
             })
-            .createContainer((div) => {
-                div
-                    .setHeading("Metrics", "h4")
+    }
 
-                for ( let metric of this.reference.metrics ) {
-                    div
-                        .setHeading("Metric " + (this.reference.metrics.indexOf(metric) + 1).toString(), "h5")
-                        .addMetric( this.reference, metric )
-                }
-                div.addButton("Add metric")
+    setUpMetricConfig( ) {
+        this.window
+            .createContainer((outsideDiv) => {
+                outsideDiv
+                    .setHeading("Metrics", "h4")
+                    .createContainer((innerDiv) => {
+                        innerDiv
+                            .setStyle({
+                                overflowY: "scroll",
+                                maxHeight: "20em"
+                            })
+                        for ( let metric of this.reference.metrics ) {
+                            innerDiv
+                                .setHeading("Metric " + (this.reference.metrics.indexOf(metric) + 1).toString(), "h5")
+                                .addMetric( this.reference, metric )
+                        }
+                    })
+                    .addButton((btn) => {
+                        btn.textContent = "Add metric";
+                        // TODO: Custom button for removing event listener
+                        btn.addEventListener('click', () => {
+                            this.reference.createMetric();
+                            this.window.removeChild(outsideDiv);
+                            this.setUpMetricConfig();
+                        })
+                    })
+                    .addButton((btn) => {
+                    btn.textContent =  "Save reference";
+                    btn.addEventListener('click', () => this.callback( this.plugin, this.reference ))
+                })
             })
+    }
+
+
+    onClose() {
+        this.containerEl.empty();
+        this.callback = () => {};
     }
 
 }

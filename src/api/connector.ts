@@ -24,7 +24,6 @@ export class Connector {
     }
 
     transformGoogleOutput( data: any[] ) {
-        console.log(data)
         return data.map((item) => {
             const newRef = new Reference(this.modal.plugin, {
                 id: item.id,
@@ -33,7 +32,6 @@ export class Connector {
                 type: "book",
                 pageCount: item.volumeInfo.pageCount
             })
-            console.log(newRef)
             return newRef;
         })
     }

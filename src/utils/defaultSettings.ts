@@ -33,7 +33,6 @@ export const DEFAULT_SETTINGS: Settings = {
             totalUnits: null,
             currentUnit: null
         }]
-
     },
     apiKeys: {
         googleBooks: {
@@ -45,5 +44,5 @@ export const DEFAULT_SETTINGS: Settings = {
             url: "https://newsapi.org/register"
         }
     },
-    referencesLocation: "references"
+    referencesLocation: "reference nexus"
 }

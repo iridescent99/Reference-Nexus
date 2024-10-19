@@ -3,14 +3,16 @@ import {IMetric} from "../reference_nexus";
 
 export class Metric implements IMetric {
 
-    name: string = "metric name";
+    name: string = "reading";
     isBinary: boolean = false;
     unit: string = "unit name";
     totalUnits: number = -1;
     currentUnit: number = -1;
     completed: boolean = false;
 
-    constructor() {
+    constructor( name: string, unit: string ) {
+        this.name = name;
+        this.unit = unit;
     }
 
     setName( name: string ) {

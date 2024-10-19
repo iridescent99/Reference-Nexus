@@ -106,7 +106,6 @@ export class ReferenceSearch extends FuzzySuggestModal<IReference> {
     }
 
     getSuggestions(query: string): FuzzyMatch<IReference>[] {
-        console.log(this.results)
         if (!query || this.results.length === 0) return [];
         return this.results.map((reference: IReference, i: number) => {
             return {

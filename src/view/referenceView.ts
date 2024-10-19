@@ -28,6 +28,10 @@ export class ReferenceView extends ItemView {
     }
 
     protected async onOpen(): Promise<void> {
+        this.loadComponents();
+    }
+
+    loadComponents() {
         const container = this.containerEl.children[1]; // Access the container
         container.empty();
         this.contentEl.createEl("h2", { text: "Reference view" })
@@ -37,7 +41,6 @@ export class ReferenceView extends ItemView {
             new ReferenceCard( this, reference )
 
         }
-        // const description = container.createEl('p', { text: 'This is a custom side pane in Obsidian!' });
     }
 
     onunload() {

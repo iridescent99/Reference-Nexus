@@ -2,28 +2,22 @@ import ReferenceNexus from "../index";
 import {IReference} from "../reference_nexus";
 import {ReferenceType} from "../search/typePicker";
 import {TFile} from "obsidian";
-import {ReferenceDiv} from "../view/referenceDiv";
-import {ReferenceEnricher} from "./referenceEnricher";
+import {Reference} from "./reference";
 
 export class ReferenceManager {
 
     plugin: ReferenceNexus
     references: IReference[] = [];
-    enricher: ReferenceEnricher;
 
     constructor( plugin: ReferenceNexus ) {
         this.plugin = plugin;
-        this.enricher = new ReferenceEnricher(plugin);
     }
 
     public async loadReferences() {
         for (let type of Object.values(ReferenceType)) {
             const path = `${this.plugin.settings.referencesLocation}/${type}.json`;
-            console.log(path)
             const file  = this.plugin.app.vault.getFileByPath(path) as TFile;
-            console.log(file)
             if (file) {
-
                 // @ts-ignore
                 await this.plugin.app.vault.read(file).then((data: any) => {
                     const items = JSON.parse(data).items;
@@ -32,18 +26,18 @@ export class ReferenceManager {
                 })
             }
         }
-        console.log(this.references)
     }
 
     private referenceExists( id: string ) {
         return this.references.filter((reference: IReference) => reference.id === id).length > 0;
     }
 
-    private async addReference( reference: IReference ) {
-        if (!this.referenceExists( reference.id )) {
-            this.references.unshift( reference );
-            return await this.writeReference( reference )
-                .then(() => this.plugin.activateView())
+    private async addReference( plugin: ReferenceNexus, reference: IReference ) {
+        const refMan = plugin.referenceManager;
+        if (!refMan.referenceExists( reference.id )) {
+            refMan.references.unshift( reference );
+            return await refMan.writeReference( reference )
+                .then(() => plugin.activateView())
                 .catch((e) => console.log(e));
         }
     }
@@ -66,11 +60,30 @@ export class ReferenceManager {
         }
     }
 
+    getReferencesByType( type: ReferenceType ) {
+        return this.references.filter((reference: Reference) => reference.type === type);
+    }
+
+    async updateJSON( type: ReferenceType ) {
+        const referencePath = `${this.plugin.settings.referencesLocation}/${type}.json`;
+        const file = this.plugin.app.vault.getFileByPath(referencePath);
+        if (file) {
+            return await this.plugin.app.vault.modify(file, JSON.stringify({
+                items: this.getReferencesByType(type)
+            }));
+        }
+    }
+
     public enrichReference( reference: IReference ): void {
-        this.enricher
+        this.plugin.referenceEnricher
             .setReference( reference )
             .setCallback( this.addReference )
             .open( )
+    }
+
+    public removeReference( reference: IReference ) {
+        this.references.remove(reference);
+        this.updateJSON( reference.type );
     }
 
 }

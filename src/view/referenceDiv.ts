@@ -9,6 +9,7 @@ export class ReferenceDiv extends HTMLDivElement {
     className: string = "reference-container";
     reference: IReference;
     view: ReferenceView;
+    closeButton: HTMLButtonElement|null;
 
     constructor( view: ReferenceView, reference: IReference ) {
 
@@ -16,14 +17,39 @@ export class ReferenceDiv extends HTMLDivElement {
         this.view = view;
         this.reference = reference;
         this.createChildNodes()
+        this.addEventListener('dblclick', () => {
+            this.view.plugin.referenceEnricher
+                .setReference( reference )
+                .open( )
+        });
+        this.addEventListener('mouseenter', () => {
+            this.setCloseButton()
+        })
+        this.addEventListener('mouseleave', () => {
+            this.removeCloseButton();
+        })
+    }
 
+    setCloseButton() {
+        this.closeButton = this.createEl("button", { text: "x" });
+        this.closeButton.style.position = "absolute";
+        this.closeButton.addEventListener('click', () => {
+            this.view.plugin.referenceManager.removeReference( this.reference );
+            this.view.loadComponents();
+        })
+        this.appendChild(this.closeButton)
+    }
+
+    removeCloseButton() {
+        if (this.closeButton) this.removeChild(this.closeButton);
+        this.closeButton = null;
     }
 
     private createChildNodes( ) {
 
         for (let [key, value] of Object.entries(this.reference)) {
 
-            if (!["metrics", "id"].includes(key)) this.appendChild( new ReferencePropertyDiv( this.view, this.reference, key, value) );
+            if (["title", "authors", "type"].includes(key)) this.appendChild( new ReferencePropertyDiv( this.view, this.reference, key, value) );
             else if (key === "metrics") this.appendChild( new MetricDiv( this.view, this.reference, value ) );
 
         }
