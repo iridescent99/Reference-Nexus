@@ -1,4 +1,4 @@
-import {Metric, Reference} from "../reference_nexus";
+import {IMetric, IReference} from "../reference_nexus";
 import {ReferenceDiv} from "./referenceDiv";
 import {ReferenceView} from "./referenceView";
 import {Tooltip} from "./tooltip";
@@ -6,14 +6,14 @@ import {Tooltip} from "./tooltip";
 
 export class ReferenceMetric extends HTMLDivElement {
 
-    data: Metric;
+    data: IMetric;
     view: ReferenceView;
     className: string = "metric tooltip-container";
     tooltipContainer: HTMLDivElement;
     colors: string[] = ["#b7b7b7", "#60efe9", "#dbee5e", "#53e570",
         "#8366d3"]
 
-    constructor( view: ReferenceView, reference: Reference, metric: Metric ) {
+    constructor(view: ReferenceView, reference: IReference, metric: IMetric ) {
 
         super();
         this.data = metric;

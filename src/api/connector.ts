@@ -1,5 +1,6 @@
 import {ReferenceSearch} from "../search/referenceSearch";
 import * as crypto from "crypto";
+import {Reference} from "../data/reference";
 
 export class Connector {
 
@@ -23,18 +24,17 @@ export class Connector {
     }
 
     transformGoogleOutput( data: any[] ) {
+        console.log(data)
         return data.map((item) => {
-            const formatted = {
+            const newRef = new Reference(this.modal.plugin, {
+                id: item.id,
                 title: item.volumeInfo.title,
                 authors: item.volumeInfo.authors,
                 type: "book",
-
-            }
-            return {
-                id: this.generateHash( JSON.stringify(formatted) ),
-                ...formatted,
-                metrics: this.modal.plugin.settings.metrics["book"]
-            }
+                pageCount: item.volumeInfo.pageCount
+            })
+            console.log(newRef)
+            return newRef;
         })
     }
 
@@ -60,9 +60,6 @@ export class Connector {
             .catch(error => console.error('Error:', error));
     }
 
-    private generateHash( data: string ) {
-        return crypto.createHash('sha256').update(data).digest('hex');
-    }
 
     transformNewsAPIOutput( data: any [] ) {
 
@@ -74,7 +71,6 @@ export class Connector {
                 type: "article"
             }
             return {
-                id: this.generateHash( JSON.stringify(formatted) ),
                 ...formatted,
                 metrics: this.modal.plugin.settings.metrics["article"]
             }

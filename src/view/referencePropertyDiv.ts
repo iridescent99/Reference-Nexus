@@ -1,4 +1,4 @@
-import {Metric, Reference} from "../reference_nexus";
+import {IMetric, IReference} from "../reference_nexus";
 import {ReferenceDiv} from "./referenceDiv";
 import {ReferenceView} from "./referenceView";
 
@@ -7,7 +7,7 @@ export class ReferencePropertyDiv extends HTMLDivElement {
     name: string;
     view: ReferenceView;
 
-    constructor( view: ReferenceView, reference: Reference, name: string, value: string|string[] ) {
+    constructor(view: ReferenceView, reference: IReference, name: string, value: string|string[] ) {
 
         super();
         this.view = view;

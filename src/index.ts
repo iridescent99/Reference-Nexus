@@ -1,5 +1,5 @@
 import {Plugin, WorkspaceLeaf} from "obsidian";
-import {Metric, Settings} from "./reference_nexus";
+import {IMetric, Settings} from "./reference_nexus";
 import {NexusSettingsTab} from "./utils/settings";
 import {ReferenceSearch} from "./search/referenceSearch";
 import {ReferenceView, VIEW_TYPE_CUSTOM} from "./view/referenceView";
@@ -11,6 +11,7 @@ import {MetricDiv} from "./view/metricDiv";
 import {ReferencePropertyDiv} from "./view/referencePropertyDiv";
 import {ReferenceMetric} from "./view/metric";
 import {Tooltip} from "./view/tooltip";
+import {GenericDiv, ObsidianDiv} from "./utils/obsidianDiv";
 
 
 export default class ReferenceNexus extends Plugin {
@@ -67,12 +68,13 @@ export default class ReferenceNexus extends Plugin {
             await this.activateView();
             console.log(this.app.workspace.getRightLeaf(false))
         });
-
+        customElements.define('obsidian-div', ObsidianDiv, { extends: "div" })
         customElements.define('reference-div', ReferenceDiv, {extends: "div"});
         customElements.define('metric-div', MetricDiv, {extends: "div"});
         customElements.define('reference-metric', ReferenceMetric, {extends: "div"});
         customElements.define('reference-property-div', ReferencePropertyDiv, {extends: "div"});
-        customElements.define('tooltip-div', Tooltip, {extends: "div"});
+        customElements.define('tooltip-div', Tooltip, { extends: "div" });
+
 
     }
 

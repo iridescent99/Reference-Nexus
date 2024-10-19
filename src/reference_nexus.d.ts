@@ -13,22 +13,28 @@ interface ApiKeySet {
     newsApi: KeyConfig;
 }
 
-interface Metric {
+interface IMetric {
     name: string;
     unit: string|null;
     isBinary: boolean;
     totalUnits: number;
     currentUnit: number;
     completed: boolean;
+    setName: ( name: string ) => IMetric;
+    setUnit: ( unit: string ) => IMetric;
+    setTotalUnits: ( totalUnits: number ) => IMetric;
+    setCurrentUnit: ( currentUnit: number ) => IMetric;
+    setCompleted: ( completed: boolean ) => IMetric;
+    setBinary: ( isBinary: boolean ) => IMetric;
 }
 
 interface ReferenceMetric {
-    [key: string]: Metric[];
-    book: Metric[];
-    article: Metric[];
-    course: Metric[];
-    "research paper": Metric[];
-    video: Metric[];
+    [key: string]: IMetric[];
+    book: IMetric[];
+    article: IMetric[];
+    course: IMetric[];
+    "research paper": IMetric[];
+    video: IMetric[];
 }
 
 interface Settings {
@@ -48,20 +54,30 @@ interface Metadata {
     lastUpdated: Date;
 }
 
-interface Reference {
+interface IReference {
+    [key: string]: any;
     id: string;
     title: string;
     authors: string[];
     meta:Metadata;
+    pageCount: number|null;
+    chapterCount: number|null;
     type: ReferenceType;
-    metrics: Metric[];
+    metrics: IMetric[];
     links: ObsidianLink[];
+    createMetric: () => void
 }
 
+interface StyleSettings {
+    [key: string]: string;
+}
 
 export {
-    Metric,
+    IMetric,
+    Metadata,
     Settings,
-    Reference,
-    ReferenceMetric
+    IReference,
+    ReferenceMetric,
+    StyleSettings,
+    ObsidianLink
 }

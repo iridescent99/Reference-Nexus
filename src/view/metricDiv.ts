@@ -1,4 +1,4 @@
-import {Metric, Reference} from "../reference_nexus";
+import {IMetric, IReference} from "../reference_nexus";
 import {ReferenceMetric} from "./metric";
 import {ReferenceView} from "./referenceView";
 import {reference} from "@popperjs/core";
@@ -9,12 +9,12 @@ export class MetricDiv extends HTMLDivElement {
     className: string = "reference-metrics"
     view: ReferenceView;
 
-    constructor( view: ReferenceView, reference: Reference, metrics: Metric[] ) {
+    constructor(view: ReferenceView, reference: IReference, metrics: IMetric[] ) {
 
         super();
         this.view = view;
         console.log(metrics)
-        metrics.map((metric: Metric) => {
+        metrics.map((metric: IMetric) => {
 
             this.appendChild(
                 new ReferenceMetric( view, reference, metric )

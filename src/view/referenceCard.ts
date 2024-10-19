@@ -1,14 +1,14 @@
-import {Reference} from "../reference_nexus";
+import {IReference} from "../reference_nexus";
 import {ReferenceDiv} from "./referenceDiv";
 import {ReferenceView} from "./referenceView";
 
 
 export class ReferenceCard {
 
-    data: Reference;
+    data: IReference;
     container: HTMLElement;
 
-    constructor( view: ReferenceView, reference: Reference ) {
+    constructor( view: ReferenceView, reference: IReference ) {
 
         this.data = reference;
         this.container = new ReferenceDiv( view, reference );

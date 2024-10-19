@@ -1,15 +1,19 @@
 import ReferenceNexus from "../index";
-import {Reference} from "../reference_nexus";
+import {IReference} from "../reference_nexus";
 import {ReferenceType} from "../search/typePicker";
 import {TFile} from "obsidian";
+import {ReferenceDiv} from "../view/referenceDiv";
+import {ReferenceEnricher} from "./referenceEnricher";
 
 export class ReferenceManager {
 
     plugin: ReferenceNexus
-    references: Reference[] = [];
+    references: IReference[] = [];
+    enricher: ReferenceEnricher;
 
     constructor( plugin: ReferenceNexus ) {
         this.plugin = plugin;
+        this.enricher = new ReferenceEnricher(plugin);
     }
 
     public async loadReferences() {
@@ -32,10 +36,10 @@ export class ReferenceManager {
     }
 
     private referenceExists( id: string ) {
-        return this.references.filter((reference: Reference) => reference.id === id).length > 0;
+        return this.references.filter((reference: IReference) => reference.id === id).length > 0;
     }
 
-    public async addReference( reference: Reference ) {
+    private async addReference( reference: IReference ) {
         if (!this.referenceExists( reference.id )) {
             this.references.unshift( reference );
             return await this.writeReference( reference )
@@ -44,11 +48,13 @@ export class ReferenceManager {
         }
     }
 
-    async writeReference( reference: Reference ) {
+    async writeReference( reference: IReference ) {
         const referencePath = `${this.plugin.settings.referencesLocation}/${reference.type}.json`;
         if (!this.plugin.app.vault.getAbstractFileByPath(referencePath)) {
-            return await this.plugin.app.vault.createFolder(this.plugin.settings.referencesLocation)
-                .then(() => this.plugin.app.vault.create(referencePath, JSON.stringify({items: [reference]})));
+            if (!this.plugin.app.vault.getFolderByPath(this.plugin.settings.referencesLocation)) {
+                await this.plugin.app.vault.createFolder(this.plugin.settings.referencesLocation)
+            }
+            return this.plugin.app.vault.create(referencePath, JSON.stringify({items: [reference]}));
         } else {
             const file = this.plugin.app.vault.getFileByPath(referencePath);
             if (file) {
@@ -58,6 +64,13 @@ export class ReferenceManager {
             }
 
         }
+    }
+
+    public enrichReference( reference: IReference ): void {
+        this.enricher
+            .setReference( reference )
+            .setCallback( this.addReference )
+            .open( )
     }
 
 }
