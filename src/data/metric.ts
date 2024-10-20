@@ -43,7 +43,8 @@ export class Metric implements IMetric {
     }
 
     calculateProgress(): number {
-        return  Math.floor(this.currentUnit / this.totalUnits  * 100);
+        if (this.isBinary) return this.completed ? 100 : 0;
+        return Math.floor(this.currentUnit / this.totalUnits  * 100);
     }
 
 }

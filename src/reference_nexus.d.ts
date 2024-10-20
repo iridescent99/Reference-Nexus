@@ -10,7 +10,7 @@ interface KeyConfig {
 interface ApiKeySet {
     [key: string]: KeyConfig;
     googleBooks: KeyConfig;
-    newsApi: KeyConfig;
+    diffBot: KeyConfig;
 }
 
 interface IMetric {
@@ -62,6 +62,8 @@ interface IReference {
     chapterCount: number|null;
     type: ReferenceType;
     metrics: IMetric[];
+    url: string;
+    image: string;
     links: ObsidianLink[];
     createMetric: () => void
     deleteMetric: ( metric: IMetric ) => void;

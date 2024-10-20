@@ -16,6 +16,8 @@ export class Reference implements IReference {
     pageCount: number|null = -1;
     chapterCount: number|null = -1;
     links: ObsidianLink[] = [];
+    image: string = "";
+    url: string = "";
 
     constructor( plugin: ReferenceNexus, args: any ) {
         for ( let [key, value] of Object.entries(args)) {
@@ -26,7 +28,11 @@ export class Reference implements IReference {
                 else this[key] = value;
             }
         }
-        if (!args.metrics) this.metrics = plugin.settings.metrics[this.type].map((config: any) => new Metric( {name: config.name, unit: config.unit} ));
+        if (!args.metrics) this.metrics = plugin.settings.metrics[this.type].map((config: any) => {
+            const base = {name: config.name, unit: config.unit};
+            if (this.type === 'video') return new Metric( {...base, isBinary: true})
+            return new Metric( base )
+        });
     }
 
     createMetric() {

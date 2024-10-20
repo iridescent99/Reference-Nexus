@@ -75,8 +75,9 @@ export class ReferenceSearch extends FuzzySuggestModal<IReference> {
         this.isBusy = true;
         this.searchButton.disabled = true;
         this.searchButton.textContent = "searching..";
-        // TODO: check for content
+        // TODO: implement paging + see if images avaialble
         if (this.referenceType === "book") this.connector.getBooks(this.inputEl.value || "");
+        if (this.referenceType === "video") this.connector.getVideos(this.inputEl.value || "");
         if (this.referenceType === "article") this.connector.getArticles(this.inputEl.value || "");
         if (this.referenceType === "research paper") this.connector.getResearchPapers(this.inputEl.value || "");
     }
@@ -86,7 +87,8 @@ export class ReferenceSearch extends FuzzySuggestModal<IReference> {
         this.results = results;
         this.isBusy = false;
         this.searchButton.disabled = false;
-        this.searchButton.textContent = "search";
+        // TODO: not ivisble text content
+        this.searchButton.textContent = this.referenceType !== "article" ? "search" : "Enter url..";
         this.inputEl.dispatchEvent(new InputEvent('input', {
             bubbles: true,
             cancelable: false

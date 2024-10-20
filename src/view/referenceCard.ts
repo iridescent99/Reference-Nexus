@@ -18,6 +18,7 @@ export class ReferenceCard extends Component {
         this.data = reference;
         this.view = view;
         this.containerEl = view.referenceContainer.createDiv()
+        if (reference.type === "article") this.DISPLAY_KEYS = ["title", "platform", "type"];
 
         // this.data = reference;
         // view.contentEl.appendChild( this.container );
@@ -38,11 +39,11 @@ export class ReferenceCard extends Component {
         })
         this.containerEl.className = "reference-container";
         this.button = new ButtonComponent(this.containerEl)
+            // TODO: imrpove click surface 
             .setIcon('cross')
             .setClass("close-button")
             .onClick(() => {
                 this.view.plugin.referenceManager.removeReference( this.data );
-                this.view.plugin.referenceManager.updateView();
             });
         this.button.buttonEl.style.display = "none";
 
@@ -63,6 +64,11 @@ export class ReferenceCard extends Component {
             if (this.DISPLAY_KEYS.includes(key)) {
                 this.containerEl.createDiv( { cls: `reference-${key}` } ).textContent = typeof value === "string" ? value : value.join(", ");
             }
+        }
+        console.log(this.data)
+        if (this.data.image) {
+            const img = this.containerEl.createEl("img", { cls: "reference-image" });
+            img.src = this.data.image;
         }
     }
 

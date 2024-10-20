@@ -1,15 +1,28 @@
 .reference-container {
-  padding:1em;
+  padding:.6em;
   margin-top:1em;
-  border: .02em solid grey;
+  background: #181818;
   border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
 
   .reference-type {
-    opacity: 70%;
+    opacity: 50%;
+    font-size: x-small;
   }
   .reference-title {
-    font-size: large;
+    font-size: medium;
+    color: #bdbdbd;
   }
+  .reference-authors, .reference-platform {
+    font-size: small;
+    opacity: 50%;
+  }
+
+  .reference-image {
+    margin-top:.5em;
+  }
+
+
 }
 
 .reference-view-search {
@@ -30,6 +43,12 @@
   justify-content: start;
 }
 
+.setting-item {
+  padding-right: 1em;
+
+
+}
+
 .view-metric-container {
   display:flex;
   flex-direction: column;
@@ -44,16 +63,29 @@
 
 .view-progress-bar {
   width: 100%;
-  background: white;
+  background: #333;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.7);
   border-radius: 15px;
 }
 
 .progress {
-  background: #f84c6b;
+  background: linear-gradient(180deg, #ff8c00, #ffc107);;
   height:1em;
   transition: width 0.3s ease;
+  box-shadow: inset 0 -3px 5px rgba(255, 255, 255, 0.2);
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
+}
+.view-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.01); /* Glossy shine adjusted for dark mode */
+  pointer-events: none;
 }
 
 .metric-reading {

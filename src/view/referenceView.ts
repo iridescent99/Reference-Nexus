@@ -37,7 +37,7 @@ export class ReferenceView extends ItemView {
             ).length > 0;
         })
     }
-
+// TODO: search based on status
     protected async onOpen(): Promise<void> {
         this.loadComponents();
         this.loadReferences();
@@ -70,7 +70,7 @@ export class ReferenceView extends ItemView {
         if (this.referenceContainer) {
             this.referenceContainer.empty();
         } else {
-            this.referenceContainer = contentEl.createDiv();
+            this.referenceContainer = contentEl.createDiv({cls: "reference-scroll"});
             this.referenceContainer.style.maxHeight = "88%";
             this.referenceContainer.style.overflowY = "scroll";
         }

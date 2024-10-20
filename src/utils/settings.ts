@@ -11,7 +11,8 @@ export class NexusSettingsTab extends PluginSettingTab {
         super(app, plugin);
         this.plugin = plugin;
     }
-
+// TODO: show image in reference view setting
+    // TODO: api key for diffbot
     display(): void {
         this.containerEl.empty();
         this.containerEl.createEl('h1', {text:'Reference Nexus'});

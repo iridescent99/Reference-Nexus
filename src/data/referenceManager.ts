@@ -1,7 +1,7 @@
 import ReferenceNexus from "../index";
 import {IReference} from "../reference_nexus";
 import {ReferenceType} from "../search/typePicker";
-import {TFile} from "obsidian";
+import {Notice, TFile} from "obsidian";
 import {Reference} from "./reference";
 import {EnrichMode} from "./referenceEnricher";
 
@@ -17,6 +17,11 @@ export class ReferenceManager {
 
     setCallback( fn: () => void ) {
         this.updateView = fn;
+    }
+
+    reloadView() {
+        if (this.plugin.referenceManager.updateView) this.plugin.referenceManager.updateView()
+        else this.plugin.activateView()
     }
 
     public async loadReferences() {
@@ -40,10 +45,10 @@ export class ReferenceManager {
     public async addReference( reference: IReference ) {
         if (!this.referenceExists( reference.id )) {
             this.references.unshift( reference );
-            return await this.writeReference( reference )
-                .then(() => this.plugin.activateView())
-                .catch((e) => console.log(e));
+            await this.writeReference( reference );
+            this.reloadView()
         }
+        new Notice("Reference is already stored in your database!")
     }
 
     public updateReference( reference: IReference ) {
@@ -76,10 +81,12 @@ export class ReferenceManager {
         const referencePath = `${this.plugin.settings.referencesLocation}/${type}.json`;
         const file = this.plugin.app.vault.getFileByPath(referencePath);
         if (file) {
-            return await this.plugin.app.vault.modify(file, JSON.stringify({
+            await this.plugin.app.vault.modify(file, JSON.stringify({
                 items: this.getReferencesByType(type)
             }));
+            this.reloadView()
         }
+
     }
 
     public enrichReference( reference: IReference ): void {
@@ -92,7 +99,6 @@ export class ReferenceManager {
     public removeReference( reference: IReference ) {
         this.references.remove(reference);
         this.updateJSON( reference.type );
-        // this.updateView();
     }
 
 }

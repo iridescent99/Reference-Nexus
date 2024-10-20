@@ -39,9 +39,9 @@ export const DEFAULT_SETTINGS: Settings = {
             key: "",
             url: "https://developers.google.com/books/docs/v1/using"
         },
-        newsApi: {
+        diffBot: {
             key: "",
-            url: "https://newsapi.org/register"
+            url: "https://docs.diffbot.com/reference/introduction-to-diffbot-apis"
         }
     },
     referencesLocation: "reference nexus"

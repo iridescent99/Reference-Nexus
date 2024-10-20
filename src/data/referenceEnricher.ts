@@ -23,6 +23,8 @@ export class ReferenceEnricher extends Modal {
     }
 
     generateEditKeys() {
+        if (this.reference.type === "article") return ["title", "authors", "pageCount", "platform", "url"]
+        if (this.reference.type === "video") return ["title", "authors", "platform", "url"];
         if (this.reference.type !== "book") return [...this.EDIT_KEYS, "platform"];
         return this.EDIT_KEYS;
     }
@@ -64,7 +66,7 @@ export class ReferenceEnricher extends Modal {
                     .setName(key)
                     .addText((cb) => {
                         cb.setValue(
-                            (["pageCount", "chapterCount"].includes(key)) ? value.toString() : value
+                            (["pageCount", "chapterCount"].includes(key)) ? value.toString() : key === "authors" ? value.join(", ") : value
                         )
                             .onChange((newVal) => {
                                 this.reference.updateProperty( key, newVal );
@@ -95,12 +97,16 @@ export class ReferenceEnricher extends Modal {
 
                 new Setting( this.metricContainer )
                     .setName(key)
+
                     .addToggle((cb) => {
-                        cb.onChange((bl) => {
+                        cb.setValue(key === "isBinary" ? this.currentMetric.isBinary : this.currentMetric.completed)
+                            .onChange((bl) => {
                             if (key === "isBinary") this.currentMetric.isBinary = bl;
                             else this.currentMetric.completed = bl;
+                            this.reloadMetrics();
                             this.plugin.referenceManager.updateReference( this.reference );
                         })
+
                     })
 
             } else if (key === "color") {
@@ -115,18 +121,20 @@ export class ReferenceEnricher extends Modal {
                     })
 
             } else {
+                if (!(this.currentMetric.isBinary && ["currentUnit", 'totalUnits', "unit"].includes(key))) {
+                    new Setting( this.metricContainer )
+                        .setName(key)
+                        .addText((cb) => {
+                            cb.setValue(
+                                ["currentUnit", "totalUnits"].includes(key) ? value.toString() : value
+                            )
+                                .onChange((newValue) => {
+                                    this.currentMetric.updateMetric(key, newValue);
+                                    this.plugin.referenceManager.updateReference( this.reference );
+                                })
+                        })
+                }
 
-                new Setting( this.metricContainer )
-                    .setName(key)
-                    .addText((cb) => {
-                        cb.setValue(
-                            ["currentUnit", "totalUnits"].includes(key) ? value.toString() : value
-                        )
-                            .onChange((newValue) => {
-                                this.currentMetric.updateMetric(key, newValue);
-                                this.plugin.referenceManager.updateReference( this.reference );
-                            })
-                    })
 
             }
         })
@@ -169,7 +177,6 @@ export class ReferenceEnricher extends Modal {
             .onClick((cb) => {
                 if (this.mode === EnrichMode.ADD) this.plugin.referenceManager.addReference( this.reference );
                 if (this.mode === EnrichMode.EDIT) this.plugin.referenceManager.updateReference( this.reference );
-                this.plugin.referenceManager.updateView();
                 this.close();
             });
 
