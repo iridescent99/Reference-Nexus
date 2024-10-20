@@ -49,7 +49,7 @@ export default class ReferenceNexus extends Plugin {
         });
 
         this.registerView(
-            'reference-view',
+            'reference-nexus-view',
             (leaf) => new ReferenceView(this, leaf)
         );
 
@@ -71,13 +71,13 @@ export default class ReferenceNexus extends Plugin {
 
     async activateView() {
         // TODO: FIX Opening two leafs now
-        this.app.workspace.detachLeavesOfType('reference-view');
+        this.app.workspace.detachLeavesOfType('reference-nexus-view');
 
-        let leaf: WorkspaceLeaf|undefined|null = this.app.workspace.getLeavesOfType('reference-view').first()
+        let leaf: WorkspaceLeaf|undefined|null = this.app.workspace.getLeavesOfType('reference-nexus-view').first()
         if (!leaf) leaf = this.app.workspace.getRightLeaf(false);
         // @ts-ignore
         await leaf.setViewState({
-            type: 'reference-view',
+            type: 'reference-nexus-view',
             active: true,
         });
 
@@ -91,7 +91,7 @@ export default class ReferenceNexus extends Plugin {
 
     onunload() {
         // TODO: close leaf properly
-        this.app.workspace.detachLeavesOfType('reference-view');
+        this.app.workspace.detachLeavesOfType('reference-nexus-view');
     }
 
 }

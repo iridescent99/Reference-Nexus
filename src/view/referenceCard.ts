@@ -42,7 +42,7 @@ export class ReferenceCard extends Component {
             .setClass("close-button")
             .onClick(() => {
                 this.view.plugin.referenceManager.removeReference( this.data );
-                this.load();
+                this.view.plugin.referenceManager.updateView();
             });
         this.button.buttonEl.style.display = "none";
 
