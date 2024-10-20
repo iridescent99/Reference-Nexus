@@ -1,112 +1,190 @@
-import {Component, Modal} from "obsidian";
+import {ButtonComponent, Component, Modal, Setting } from "obsidian";
 import ReferenceNexus from "../index";
-import {IReference} from "../reference_nexus";
-import {ObsidianDiv} from "../utils/obsidianDiv";
+import {IMetric, IReference} from "../reference_nexus";
 
+export enum EnrichMode {
+    ADD="add",
+    EDIT="edit"
+}
 
 export class ReferenceEnricher extends Modal {
 
-    private callback: Function = () => {};
     private reference: IReference;
-    private window: ObsidianDiv
+    mode: EnrichMode = EnrichMode.ADD;
+    metricContainer: HTMLElement;
+    currentMetric: IMetric;
+    EDIT_KEYS: string[] = ["title", "authors", "pageCount", "chapterCount"];
+    PLACEHOLDER_KEYS: string[] = ["id", "type"];
     plugin: ReferenceNexus;
 
     constructor( plugin: ReferenceNexus ) {
         super(plugin.app);
         this.plugin = plugin;
-        Object.setPrototypeOf(this.containerEl.children[1], ObsidianDiv.prototype)
-        this.window = this.containerEl.children[1] as ObsidianDiv;
     }
 
-    setCallback( fn: Function ): ReferenceEnricher {
-        this.callback = fn;
+    generateEditKeys() {
+        if (this.reference.type !== "book") return [...this.EDIT_KEYS, "platform"];
+        return this.EDIT_KEYS;
+    }
+
+    updateMode( mode: EnrichMode ) {
+        this.mode = mode;
         return this;
     }
 
     setReference( reference: IReference ): ReferenceEnricher {
+
         this.reference = reference;
+        this.currentMetric = reference.metrics[0];
         return this;
+
     }
 
     onOpen() {
-        this.window
-            .setStyle({
-                // background: "pink"
-            })
-            .setTitle("Reference Enricher")
-        this.setUpReferenceConfig();
-        this.setUpMetricConfig();
+
+        console.log(this.reference)
+        const { contentEl } = this;
+        contentEl.createEl("h2", { text: "Reference Enricher" })
+        contentEl.createEl("p", { text: "Adjust the configurations for this reference and choose your preferred metrics." })
+        contentEl.createEl("br")
+        this.createSettings()
+            .createMetrics();
+
     }
 
-    setUpReferenceConfig( ) {
-        this.window
-            .createContainer((div) => {
-                div
-                    .setHeading(this.reference.title, "h3")
-                    .addParagraph("Adjust the configurations for this reference and choose your preferred metrics.")
-                    .addSetting((setting) => {
-                        setting.setName("title")
-                            .addText((cb) => cb.setValue(this.reference.title))
-                    })
-                    .addSetting((setting) => {
-                        setting
-                            .setName("authors")
-                            .addText((cb) => cb.setValue(this.reference.authors.join(", ")))
-                    })
-                    .addSetting((setting) => {
-                        setting
-                            .setName("page count")
-                            .addText((cb) => cb.setValue(this.reference.pageCount?.toString() || ""))
-                    })
-                if (this.reference.type === "book") {
-                    div
-                        .addSetting((setting) => {
-                            setting
-                                .setName("chapter count")
-                                .addText((cb) => cb.setValue(this.reference.chapterCount?.toString() || ""))
-                        })
-                        .addLine()
-                }
-            })
-    }
+    createSettings() {
 
-    setUpMetricConfig( ) {
-        this.window
-            .createContainer((outsideDiv) => {
-                outsideDiv
-                    .setHeading("Metrics", "h4")
-                    .createContainer((innerDiv) => {
-                        innerDiv
-                            .setStyle({
-                                overflowY: "scroll",
-                                maxHeight: "20em"
+        const { contentEl } = this;
+        const container = contentEl.createDiv();
+
+        for ( let [key, value] of Object.entries(this.reference)) {
+
+            if (this.generateEditKeys().includes(key)) {
+                new Setting(container)
+                    .setName(key)
+                    .addText((cb) => {
+                        cb.setValue(
+                            (["pageCount", "chapterCount"].includes(key)) ? value.toString() : value
+                        )
+                            .onChange((newVal) => {
+                                this.reference.updateProperty( key, newVal );
                             })
-                        for ( let metric of this.reference.metrics ) {
-                            innerDiv
-                                .setHeading("Metric " + (this.reference.metrics.indexOf(metric) + 1).toString(), "h5")
-                                .addMetric( this.reference, metric )
-                        }
                     })
-                    .addButton((btn) => {
-                        btn.textContent = "Add metric";
-                        // TODO: Custom button for removing event listener
-                        btn.addEventListener('click', () => {
-                            this.reference.createMetric();
-                            this.window.removeChild(outsideDiv);
-                            this.setUpMetricConfig();
-                        })
-                    })
-                    .addButton((btn) => {
-                    btn.textContent =  "Save reference";
-                    btn.addEventListener('click', () => this.callback( this.plugin, this.reference ))
-                })
-            })
+            } else if (this.PLACEHOLDER_KEYS.includes(key)) {
+                new Setting(container)
+                    .setName(key)
+                    .addText((cb) => cb.setPlaceholder(value).setDisabled(true))
+            }
+
+        }
+
+        container.createEl("br");
+        return this;
+
     }
 
+    createMetrics() {
+
+        const { contentEl } = this;
+        this.metricContainer = contentEl.createDiv();
+        this.metricContainer.createEl("h3", { text: "Metrics" });
+
+        Object.entries(this.currentMetric).forEach(([key, value]) => {
+
+            if ( ["isBinary", "completed"].includes(key) ) {
+
+                new Setting( this.metricContainer )
+                    .setName(key)
+                    .addToggle((cb) => {
+                        cb.onChange((bl) => {
+                            if (key === "isBinary") this.currentMetric.isBinary = bl;
+                            else this.currentMetric.completed = bl;
+                            this.plugin.referenceManager.updateReference( this.reference );
+                        })
+                    })
+
+            } else if (key === "color") {
+
+                new Setting( this.metricContainer )
+                    .setName(key)
+                    .addColorPicker((cb) => {
+                        cb.onChange((newValue) => {
+                            this.currentMetric.updateMetric(key, newValue);
+                            this.plugin.referenceManager.updateReference( this.reference );
+                        }).setValue(value)
+                    })
+
+            } else {
+
+                new Setting( this.metricContainer )
+                    .setName(key)
+                    .addText((cb) => {
+                        cb.setValue(
+                            ["currentUnit", "totalUnits"].includes(key) ? value.toString() : value
+                        )
+                            .onChange((newValue) => {
+                                this.currentMetric.updateMetric(key, newValue);
+                                this.plugin.referenceManager.updateReference( this.reference );
+                            })
+                    })
+
+            }
+        })
+
+
+        const moveMetric =  this.metricContainer.createDiv( { cls: "button-container-move-metric" } );
+
+        const currentMetricIndex = this.reference.metrics.indexOf(this.currentMetric);
+
+        const btnLeft = new ButtonComponent( moveMetric  )
+            .setIcon('move-left')
+            .onClick(() => {
+                this.currentMetric = this.reference.metrics[ currentMetricIndex - 1 ];
+                this.reloadMetrics();
+            })
+        if ( currentMetricIndex === 0 ) btnLeft.setDisabled(true);
+        const btnRight = new ButtonComponent( moveMetric )
+            .setIcon('move-right')
+            .onClick(() => {
+                this.currentMetric = this.reference.metrics[ currentMetricIndex + 1 ];
+                this.reloadMetrics();
+            })
+        if ( currentMetricIndex === this.reference.metrics.length - 1 ) btnRight.setDisabled(true);
+
+        const btnContainer = this.metricContainer.createDiv( { cls: "button-container" } )
+        new ButtonComponent( btnContainer )
+            .setButtonText("add metric")
+            .onClick((cb) => {
+                this.reference.createMetric();
+                this.reloadMetrics();
+            });
+        new ButtonComponent( btnContainer )
+            .setButtonText("delete metric")
+            .onClick((cb) => {
+                this.reference.deleteMetric( this.currentMetric );
+                this.reloadMetrics();
+            });
+        new ButtonComponent( btnContainer )
+            .setButtonText("save reference")
+            .onClick((cb) => {
+                if (this.mode === EnrichMode.ADD) this.plugin.referenceManager.addReference( this.reference );
+                if (this.mode === EnrichMode.EDIT) this.plugin.referenceManager.updateReference( this.reference );
+                this.plugin.referenceManager.updateView();
+                this.close();
+            });
+
+
+        return this;
+
+    }
+
+    reloadMetrics() {
+        this.metricContainer.empty();
+        this.createMetrics();
+    }
 
     onClose() {
-        this.containerEl.empty();
-        this.callback = () => {};
+        this.contentEl.empty();
     }
 
 }

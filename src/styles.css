@@ -25,8 +25,55 @@
   justify-content: start;
 }
 
+.view-metric-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+}
+
+.metric-div {
+  width: 100%;
+  margin: 1em 0 0 0;
+}
+
+.view-progress-bar {
+  width: 100%;
+  background: white;
+  border-radius: 15px;
+}
+
+.progress {
+  background: #f84c6b;
+  height: 1em;
+  transition: width 0.3s ease;
+  border-bottom-left-radius: 15px;
+  border-top-left-radius: 15px;
+}
+
 .metric-reading {
   background: pink;
+}
+
+.close-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+
+.reference-container {
+  position: relative;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.button-container-move-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .metric {

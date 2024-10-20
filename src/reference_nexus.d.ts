@@ -14,18 +14,16 @@ interface ApiKeySet {
 }
 
 interface IMetric {
+    [key: string]: any;
     name: string;
     unit: string|null;
     isBinary: boolean;
     totalUnits: number;
     currentUnit: number;
     completed: boolean;
-    setName: ( name: string ) => IMetric;
-    setUnit: ( unit: string ) => IMetric;
-    setTotalUnits: ( totalUnits: number ) => IMetric;
-    setCurrentUnit: ( currentUnit: number ) => IMetric;
-    setCompleted: ( completed: boolean ) => IMetric;
-    setBinary: ( isBinary: boolean ) => IMetric;
+    color: string;
+    updateMetric: ( key: string, value: string ) => void;
+    calculateProgress: () => number;
 }
 
 interface ReferenceMetric {
@@ -66,6 +64,8 @@ interface IReference {
     metrics: IMetric[];
     links: ObsidianLink[];
     createMetric: () => void
+    deleteMetric: ( metric: IMetric ) => void;
+    updateProperty: ( key: string, value: string ) => void;
 }
 
 interface StyleSettings {

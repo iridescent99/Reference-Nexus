@@ -19,20 +19,46 @@ export class Reference implements IReference {
 
     constructor( plugin: ReferenceNexus, args: any ) {
         for ( let [key, value] of Object.entries(args)) {
-            if (Object.prototype.hasOwnProperty.call(this, key)) { // @ts-ignore
-                this[key] = value;
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+                // @ts-ignore
+                if (key === "metrics") this.metrics = value.map((data: any) => new Metric(data))
+                // @ts-ignore
+                else this[key] = value;
             }
         }
-        this.metrics = plugin.settings.metrics[this.type].map((config: any) => new Metric(config.name, config.unit));
+        if (!args.metrics) this.metrics = plugin.settings.metrics[this.type].map((config: any) => new Metric( {name: config.name, unit: config.unit} ));
     }
 
     createMetric() {
-        this.metrics.push(new Metric( "reading", "chapter" ));
+        this.metrics.push(new Metric( { name: "reading", unit:"chapter" } ));
     }
 
-    private generateHash( ) {
-        // return crypto.createHash('sha256').update(data).digest('hex');
+    deleteMetric( metric: IMetric ) {
+        this.metrics.remove( metric );
     }
 
+    updateProperty( key: string, value: string ) {
+        switch (key) {
+            case "title":
+                this.title = value;
+                break;
+            case "authors":
+                // TODO: fix authors
+                this.authors = value.split(" ");
+                break;
+            case "platform":
+                this.platform = value;
+                break;
+            case "pageCount":
+                this.pageCount = parseInt(value);
+                break;
+            case "chapterCount":
+                this.chapterCount = parseInt(value);
+                break;
+            default:
+                break;
+
+        }
+    }
 
 }

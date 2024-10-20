@@ -8,41 +8,42 @@ export class Metric implements IMetric {
     unit: string = "unit name";
     totalUnits: number = -1;
     currentUnit: number = -1;
+    color: string = "#000";
     completed: boolean = false;
 
-    constructor( name: string, unit: string ) {
-        this.name = name;
-        this.unit = unit;
+    constructor( args: any ) {
+        for ( let [key, value] of Object.entries(args)) {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+                // @ts-ignore
+                this[key] = value;
+            }
+        }
     }
 
-    setName( name: string ) {
-        this.name = name;
-        return this;
+    updateMetric( key: string, value: string ) {
+        switch (key) {
+            case "name":
+                this.name = value;
+                break;
+            case "unit":
+                this.unit = value;
+                break;
+            case "color":
+                this.color = value;
+                break;
+            case "totalUnits":
+                this.totalUnits = parseInt(value);
+                break;
+            case "currentUnit":
+                this.currentUnit = parseInt(value);
+                break;
+            default:
+                break;
+        }
     }
 
-    setUnit( unit: string ) {
-        this.unit = unit;
-        return this;
-    }
-
-    setCompleted( completed: boolean ) {
-        this.completed = completed;
-        return this;
-    }
-
-    setBinary( isBinary: boolean ) {
-        this.isBinary = isBinary;
-        return this;
-    }
-
-    setCurrentUnit( currentUnit: number ) {
-        this.currentUnit = currentUnit;
-        return this;
-    }
-
-    setTotalUnits( totalUnits: number ) {
-        this.totalUnits = totalUnits;
-        return this;
+    calculateProgress(): number {
+        return  Math.floor(this.currentUnit / this.totalUnits  * 100);
     }
 
 }

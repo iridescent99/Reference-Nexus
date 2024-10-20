@@ -6,12 +6,6 @@ import {ReferenceView, VIEW_TYPE_CUSTOM} from "./view/referenceView";
 import {ReferenceManager} from "./data/referenceManager";
 import "./styles.css";
 import {DEFAULT_SETTINGS} from "./utils/defaultSettings";
-import {ReferenceDiv} from "./view/referenceDiv";
-import {MetricDiv} from "./view/metricDiv";
-import {ReferencePropertyDiv} from "./view/referencePropertyDiv";
-import {ReferenceMetric} from "./view/metric";
-import {Tooltip} from "./view/tooltip";
-import {ObsidianDiv} from "./utils/obsidianDiv";
 import {ReferenceEnricher} from "./data/referenceEnricher";
 
 
@@ -71,13 +65,6 @@ export default class ReferenceNexus extends Plugin {
             await this.activateView();
             console.log(this.app.workspace.getRightLeaf(false))
         });
-        customElements.define('obsidian-div', ObsidianDiv, { extends: "div" })
-        customElements.define('reference-div', ReferenceDiv, {extends: "div"});
-        customElements.define('metric-div', MetricDiv, {extends: "div"});
-        customElements.define('reference-metric', ReferenceMetric, {extends: "div"});
-        customElements.define('reference-property-div', ReferencePropertyDiv, {extends: "div"});
-        customElements.define('tooltip-div', Tooltip, { extends: "div" });
-
 
     }
 

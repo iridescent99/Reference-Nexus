@@ -3,14 +3,20 @@ import {IReference} from "../reference_nexus";
 import {ReferenceType} from "../search/typePicker";
 import {TFile} from "obsidian";
 import {Reference} from "./reference";
+import {EnrichMode} from "./referenceEnricher";
 
 export class ReferenceManager {
 
     plugin: ReferenceNexus
     references: IReference[] = [];
+    updateView: Function;
 
     constructor( plugin: ReferenceNexus ) {
         this.plugin = plugin;
+    }
+
+    setCallback( fn: () => void ) {
+        this.updateView = fn;
     }
 
     public async loadReferences() {
@@ -21,8 +27,7 @@ export class ReferenceManager {
                 // @ts-ignore
                 await this.plugin.app.vault.read(file).then((data: any) => {
                     const items = JSON.parse(data).items;
-                    console.log(data);
-                    this.references = [...this.references, ...items]
+                    this.references = [...this.references, ...items.map((item: any) => new Reference(this.plugin, item))]
                 })
             }
         }
@@ -32,14 +37,17 @@ export class ReferenceManager {
         return this.references.filter((reference: IReference) => reference.id === id).length > 0;
     }
 
-    private async addReference( plugin: ReferenceNexus, reference: IReference ) {
-        const refMan = plugin.referenceManager;
-        if (!refMan.referenceExists( reference.id )) {
-            refMan.references.unshift( reference );
-            return await refMan.writeReference( reference )
-                .then(() => plugin.activateView())
+    public async addReference( reference: IReference ) {
+        if (!this.referenceExists( reference.id )) {
+            this.references.unshift( reference );
+            return await this.writeReference( reference )
+                .then(() => this.plugin.activateView())
                 .catch((e) => console.log(e));
         }
+    }
+
+    public updateReference( reference: IReference ) {
+        this.updateJSON( reference.type );
     }
 
     async writeReference( reference: IReference ) {
@@ -76,14 +84,15 @@ export class ReferenceManager {
 
     public enrichReference( reference: IReference ): void {
         this.plugin.referenceEnricher
+            .updateMode( EnrichMode.ADD )
             .setReference( reference )
-            .setCallback( this.addReference )
             .open( )
     }
 
     public removeReference( reference: IReference ) {
         this.references.remove(reference);
         this.updateJSON( reference.type );
+        // this.updateView();
     }
 
 }
