@@ -89,11 +89,10 @@ export class ReferenceSearch extends FuzzySuggestModal<IReference> {
         this.searchButton.disabled = false;
         // TODO: not ivisble text content
         this.searchButton.textContent = this.referenceType !== "article" ? "search" : "Enter url..";
-        this.inputEl.dispatchEvent(new InputEvent('input', {
+        if ( this.results.length > 0 ) this.inputEl.dispatchEvent(new InputEvent('input', {
             bubbles: true,
             cancelable: false
         }))
-
     }
 
     public setReferenceType( type: ReferenceType ) {

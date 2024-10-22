@@ -1,6 +1,7 @@
 import {ReferenceSearch} from "../search/referenceSearch";
 import * as crypto from "crypto";
 import {Reference} from "../data/reference";
+import {Notice} from "obsidian";
 
 export class Connector {
 
@@ -37,20 +38,33 @@ export class Connector {
     }
 
     async getDataRP( paperId: string ){
-        const response = await fetch(
-            `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.semanticscholar.org/graph/v1/paper/${paperId}?fields=url,year,authors,title,images`)}`,
 
-        )
+        try {
+            const response = await fetch(
+                `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.semanticscholar.org/graph/v1/paper/${paperId}?fields=url,year,authors,title,images`)}`,
 
-        // Parse the response and its contents
-        const data = await response.json();
-        const content = JSON.parse(data.contents);
-        console.log(content)
-        // Safely handle undefined 'objects' and transform the output
-        const articles: Reference[] = this.transformSemanticScholarOutput(content.data || []);
+            )
+            if (response.status !== 200) {
+                new Notice("Failed to fetch results. See console for error.");
+                console.log(response.er)
+                this.modal.setResults([])
+            }
+            // Parse the response and its contents
+            const data = await response.json();
+            const content = JSON.parse(data.contents);
+            console.log(content)
+            // Safely handle undefined 'objects' and transform the output
+            const articles: Reference[] = this.transformSemanticScholarOutput(content.data || []);
 
-        // Set the results in the modal
-        this.modal.setResults(articles);
+            // Set the results in the modal
+            this.modal.setResults(articles);
+        } catch (e) {
+            this.modal.setResults([])
+            new Notice("Error fetching results. See console for error message.")
+            console.error(e.name)
+            console.error(e.message)
+        }
+
     }
 
     async getResearchPapers( query: string ) {
@@ -74,7 +88,10 @@ export class Connector {
 
 
         } catch (error) {
-            console.error('Error fetching articles:', error);
+            this.modal.setResults([])
+            new Notice("Error fetching results. See console for error message.")
+            console.error(error.name)
+            console.error(error.message)
         }
     }
 
@@ -112,7 +129,10 @@ export class Connector {
             this.modal.setResults(articles);
 
         } catch (error) {
-            console.error('Error fetching articles:', error);
+            this.modal.setResults([])
+            new Notice("Error fetching results. See console for error message.")
+            console.error('Error fetching articles:', error.name);
+            console.error(error.message)
         }
 
     }
@@ -189,7 +209,7 @@ export class Connector {
                     }
                 }
             );
-
+            console.log(response)
             // Parse the response and its contents
             const data = await response.json();
             const content = JSON.parse(data.contents);
@@ -201,9 +221,18 @@ export class Connector {
             this.modal.setResults(articles);
 
         } catch (error) {
-            console.error('Error fetching articles:', error);
+
+            this.processError(error)
+
         }
 
+    }
+
+    processError(e: Error) {
+        this.modal.setResults([])
+        new Notice("Error fetching results. See console for error message.")
+        console.error('Error fetching articles:', e.name);
+        console.error(e.message)
     }
 
 }
