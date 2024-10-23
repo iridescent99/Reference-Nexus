@@ -43,6 +43,11 @@ export class Reference implements IReference {
         this.metrics.remove( metric );
     }
 
+    linkExists( id: string ) {
+        console.log(id);
+        return true;
+    }
+
     updateProperty( key: string, value: string ) {
         switch (key) {
             case "title":

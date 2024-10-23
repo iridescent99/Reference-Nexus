@@ -44,5 +44,7 @@ export const DEFAULT_SETTINGS: Settings = {
             url: "https://docs.diffbot.com/reference/introduction-to-diffbot-apis"
         }
     },
-    referencesLocation: "reference nexus"
+    referencesLocation: "reference nexus",
+    appearInGraphView: false,
+    showProgressInView: false
 }

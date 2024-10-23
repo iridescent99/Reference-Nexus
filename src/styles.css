@@ -1,24 +1,106 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+.reference-view-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.reference-view-header {
+  font-family: "Inter", sans-serif;
+  color: grey;
+}
+
+.reference-scroll {
+  overflow-y: scroll;
+  margin-bottom: 1em;
+}
+
+.reference-view-theme-container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 1em;
+}
+
+.dashboard-authors {
+  font-family: "Playfair Display", serif;
+}
+
+.dashboard-metric-title {
+  font-family: "Inter", sans-serif;
+}
+
+.reference-view-theme-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.reference-title {
+  margin: 0.3em 0;
+  font-size: medium;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  word-wrap: break-word !important;
+  /* Break long words */
+  overflow-wrap: break-word !important;
+  white-space: normal;
+}
+
+.view-theme-options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.1em;
+}
+
+.view-theme-option {
+  background-color: pink;
+  margin-top: 0.2em;
+  border: 1px solid #e7e7e7;
+  display: inline-block;
+}
+
 .reference-container {
-  padding: 0.6em;
-  margin-top: 1em;
-  background: #181818;
-  border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin-top: 0.5em;
+  margin-right: 1em;
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr;
+  padding: 0.2em 0 0.5em 0;
+  border-bottom: 0.02em solid #eeeeee;
+  word-wrap: break-word !important;
+  /* Break long words */
+  overflow-wrap: break-word !important;
+  white-space: normal;
+}
+.reference-container .content-container {
+  grid-row: 2;
+  grid-column: 1;
+  padding: 0.6em 0.6em 0 0.6em;
+  box-sizing: border-box;
 }
 .reference-container .reference-type {
   opacity: 50%;
   font-size: x-small;
-}
-.reference-container .reference-title {
-  font-size: medium;
-  color: #bdbdbd;
+  word-wrap: break-word;
+  /* Break long words */
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 .reference-container .reference-authors, .reference-container .reference-platform {
   font-size: small;
-  opacity: 50%;
+  opacity: 75%;
+  font-family: "Playfair Display", serif;
+  word-wrap: break-word !important;
+  /* Break long words */
+  overflow-wrap: break-word !important;
+  white-space: normal;
 }
 .reference-container .reference-image {
-  margin-top: 0.5em;
+  grid-row: 1;
+  grid-column: 1;
 }
 
 /* https://codepen.io/mikedidthis/pen/PNYjPN */
@@ -34,6 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: start;
+  margin-bottom: 1em;
 }
 
 .setting-item {
@@ -44,6 +127,8 @@
   display: flex;
   flex-direction: column;
   justify-content: left;
+  padding: 0.6em 0.6em 1em 0.6em;
+  box-sizing: border-box;
 }
 
 .metric-div {
@@ -51,14 +136,14 @@
   margin: 1em 0 0 0;
 }
 
-.view-progress-bar {
+.dashboard-progress-bar, .view-progress-bar {
   width: 100%;
   background: #333;
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.7);
   border-radius: 15px;
 }
 
-.progress {
+.dashboard-progress, .view-progress {
   background: linear-gradient(180deg, #ff8c00, #ffc107);
   height: 1em;
   transition: width 0.3s ease;
@@ -67,7 +152,7 @@
   border-top-left-radius: 15px;
 }
 
-.view-progress-bar::after {
+.dashboard-progress-bar::after, .view-progress-bar::after {
   content: "";
   position: absolute;
   top: 0;
@@ -84,10 +169,13 @@
   background: pink;
 }
 
-.close-button {
+.reference-button-container {
   position: absolute;
   top: 0.5em;
   right: 0.5em;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.3em;
 }
 
 .reference-container {

@@ -17,44 +17,59 @@ export class NexusSettingsTab extends PluginSettingTab {
         this.containerEl.empty();
         this.containerEl.createEl('h1', {text:'Reference Nexus'});
         this.configContainer = this.containerEl.createDiv({cls: "list-config-container"});
-        this.configContainer.createEl('h3', {text:'Metrics'})
-        const metricsDiv = this.configContainer.createDiv({text: "Choose metrics for evaluating progress per reference type."});
-        metricsDiv.appendChild(this.containerEl.createEl("br"));
+        this.configContainer.createEl('h3', {text:'Default metrics'})
 
         for (let type of Object.values(ReferenceType)) {
-            const metricSetting = new Setting(metricsDiv);
+            const metricSetting = new Setting(this.configContainer);
             metricSetting
                 .setName(type)
-                .setHeading()
             for (let metric of this.plugin.settings.metrics[type]) {
                 metricSetting
-                    .addText((cb) => cb.setPlaceholder(metric.name))
-                    .addText((cb) => cb.setPlaceholder(metric.unit))
+                    .addText((cb) => cb.setValue(metric.name))
+                    .addText((cb) => cb.setValue(metric.unit))
             }
         }
 
         this.configContainer.createEl('h3', {text:'API Keys'});
-        const apiDiv = this.configContainer.createDiv({text: "API Keys for finding matching reference types."});
 
         for (let [key, value] of Object.entries(this.plugin.settings.apiKeys)) {
-            new Setting(apiDiv)
+            new Setting(this.configContainer)
                 .setName(key)
                 .setDesc(`Register for an API key at ${value.url}`)
                 .addText((cb) => {
-                    cb.setPlaceholder(value.key)
+                    cb.setValue(value.key)
                         .onChange((newKey: string) => this.setAPIKey(key, newKey))
                 })
         }
 
     // TODO: on change settings location move all files to new loc
         this.configContainer.createEl('h3', {text:'Paths'});
-        const locDiv = this.configContainer.createDiv({text: "Locations for storing references."});
-        new Setting(locDiv)
+        new Setting(this.configContainer)
             .setDesc("Folder to save reference data to.")
-            .addText((cb) => cb.setPlaceholder(this.plugin.settings.referencesLocation).onChange((newPath: string) => {
+            .addText((cb) => cb.setValue(this.plugin.settings.referencesLocation).onChange((newPath: string) => {
                 this.plugin.settings.referencesLocation = newPath;
                 this.plugin.saveSettings();
             }))
+
+
+        this.configContainer.createEl('h3', {text:'Graph'});
+        new Setting(this.configContainer)
+            .setDesc("Activate if you want your references to appear in Obsidian's graph view.")
+            .addToggle((cb) => cb.setValue(this.plugin.settings.appearInGraphView)
+                .onChange((newValue: boolean) => {
+                this.plugin.settings.appearInGraphView = newValue;
+                this.plugin.saveSettings();
+            }));
+
+        this.configContainer.createEl('h3', {text:'View'});
+        new Setting(this.configContainer)
+            .setDesc("Activate if you want the progress bars to be visible in your reference view.")
+            .addToggle((cb) => cb.setValue(this.plugin.settings.showProgressInView)
+                .onChange((newValue: boolean) => {
+                    this.plugin.settings.showProgressInView = newValue;
+                    this.plugin.saveSettings();
+                    // TODO: reload view
+                }))
 
     }
 

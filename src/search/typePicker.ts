@@ -21,7 +21,8 @@ export class ReferenceTypePicker extends SuggestModal<ReferenceType> {
     }
 
     getSuggestions(query: string): ReferenceType[] | Promise<ReferenceType[]> {
-        return Object.values(ReferenceType);
+        if (!(query.length > 0)) return Object.values(ReferenceType);
+        return Object.values(ReferenceType).filter((type: ReferenceType) => type.contains(query.toLowerCase()));
     }
 
     renderSuggestion(value: ReferenceType, el: HTMLElement) {

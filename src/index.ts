@@ -1,19 +1,23 @@
-import {Plugin, WorkspaceLeaf} from "obsidian";
+import {Plugin, TFile, WorkspaceLeaf} from "obsidian";
 import {IMetric, Settings} from "./reference_nexus";
 import {NexusSettingsTab} from "./utils/settings";
 import {ReferenceSearch} from "./search/referenceSearch";
-import {ReferenceView, VIEW_TYPE_CUSTOM} from "./view/referenceView";
+import {ReferenceView,} from "./view/referenceView";
 import {ReferenceManager} from "./data/referenceManager";
 import "./styles.css";
 import {DEFAULT_SETTINGS} from "./utils/defaultSettings";
 import {ReferenceEnricher} from "./data/referenceEnricher";
-
+import {ReferenceDashboard} from "./data/referenceDashboard";
+export const VIEW_TYPE = "reference-nexus-view";
 
 export default class ReferenceNexus extends Plugin {
 
     settings: Settings;
     referenceManager: ReferenceManager;
     referenceEnricher: ReferenceEnricher;
+    referenceDashboard: ReferenceDashboard;
+    referenceLeaf: WorkspaceLeaf;
+    scanTimeOut: number;
 
     async onload() {
 
@@ -36,6 +40,7 @@ export default class ReferenceNexus extends Plugin {
 
         this.referenceManager = new ReferenceManager(this);
         this.referenceEnricher = new ReferenceEnricher(this);
+        this.referenceDashboard = new ReferenceDashboard(this)
         this.referenceManager.loadReferences();
 
         this.addSettingTab(new NexusSettingsTab(this.app, this));
@@ -49,7 +54,7 @@ export default class ReferenceNexus extends Plugin {
         });
 
         this.registerView(
-            'reference-nexus-view',
+            VIEW_TYPE,
             (leaf) => new ReferenceView(this, leaf)
         );
 
@@ -61,38 +66,70 @@ export default class ReferenceNexus extends Plugin {
             }
         });
 
-        this.addRibbonIcon('book', 'reference view', async () => {
+        this.addRibbonIcon('library-big', 'reference view', async () => {
             await this.activateView();
-            console.log(this.app.workspace.getRightLeaf(false))
         });
 
+        const existingView = this.app.workspace.getLeavesOfType(VIEW_TYPE);
+        if (existingView.length > 0) {
+            // If the view is already open, manually trigger rendering
+            const view = existingView[0].view as ReferenceView;
+            view.initialize();
+        }
+
+        this.app.workspace.on('quit', () => {
+            this.referenceLeaf.detach()
+        })
+
+        this.app.vault.on('modify', (file: TFile) => {
+            if (file.extension === "md") this.debounceScan(file);
+        })
+
+    }
+
+    debounceScan( file: TFile ) {
+        if (this.scanTimeOut) {
+            clearTimeout(this.scanTimeOut);
+        }
+
+        this.scanTimeOut = window.setTimeout(() =>{
+            this.referenceManager.scanForLinks();
+        }, 5000)
     }
 
 
     async activateView() {
-        // TODO: FIX Opening two leafs now
-        this.app.workspace.detachLeavesOfType('reference-nexus-view');
+        const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE);
 
-        let leaf: WorkspaceLeaf|undefined|null = this.app.workspace.getLeavesOfType('reference-nexus-view').first()
-        if (!leaf) leaf = this.app.workspace.getRightLeaf(false);
-        // @ts-ignore
-        await leaf.setViewState({
-            type: 'reference-nexus-view',
-            active: true,
-        });
-
-        if (leaf) await this.app.workspace.revealLeaf(
-            leaf
-        );
-
+        // If the view is already open, just reveal it
+        if (leaves.length > 0) {
+            this.referenceLeaf = leaves[0]
+            await this.app.workspace.revealLeaf(this.referenceLeaf);
+        } else {
+            // Otherwise, open a new one in the right pane
+            await this.app.workspace.getRightLeaf(false)?.setViewState({
+                type: VIEW_TYPE,
+                active: true,
+            });
+            this.referenceLeaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
+            await this.app.workspace.revealLeaf(this.referenceLeaf);
+        }
     }
 
 
 
     onunload() {
         // TODO: close leaf properly
-        this.app.workspace.detachLeavesOfType('reference-nexus-view');
+        // this.closeView().then(() => this.unload())
     }
+
+    async closeView() {
+        await new Promise<void>((resolve) => {
+            this.referenceLeaf.detach()
+            resolve();
+        });
+    }
+
 
 }
 

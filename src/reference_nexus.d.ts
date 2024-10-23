@@ -38,13 +38,14 @@ interface ReferenceMetric {
 interface Settings {
     metrics: Object<ReferenceMetric>;
     apiKeys: ApiKeySet;
-    referencesLocation: string
+    referencesLocation: string;
+    appearInGraphView: boolean;
+    showProgressInView: boolean;
 }
 
 interface ObsidianLink {
     [key: string]: any;
     file: TFile;
-
 }
 
 interface Metadata {
@@ -67,6 +68,7 @@ interface IReference {
     links: ObsidianLink[];
     createMetric: () => void
     deleteMetric: ( metric: IMetric ) => void;
+    linkExists: ( id: string ) => boolean;
     updateProperty: ( key: string, value: string ) => void;
 }
 

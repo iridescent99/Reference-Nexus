@@ -4,6 +4,7 @@ import {ReferenceType} from "../search/typePicker";
 import {Notice, TFile} from "obsidian";
 import {Reference} from "./reference";
 import {EnrichMode} from "./referenceEnricher";
+import {reference} from "@popperjs/core";
 
 export class ReferenceManager {
 
@@ -73,21 +74,54 @@ export class ReferenceManager {
         }
     }
 
+    getReferenceById( id: string ) {
+        return this.references.filter((reference: Reference) => reference.id === id)[0] || null;
+    }
+
     getReferencesByType( type: ReferenceType ) {
         return this.references.filter((reference: Reference) => reference.type === type);
     }
 
-    async updateJSON( type: ReferenceType ) {
+    async updateJSON( type?: ReferenceType ) {
+        if (type) {
+            await this.saveTypeFile( type );
+        } else {
+            for ( let type of Object.values(ReferenceType) ) {
+                await this.saveTypeFile( type );
+            }
+        }
+        this.reloadView()
+
+    }
+
+    async saveTypeFile( type: ReferenceType ) {
         const referencePath = `${this.plugin.settings.referencesLocation}/${type}.json`;
         const file = this.plugin.app.vault.getFileByPath(referencePath);
         if (file) {
             await this.plugin.app.vault.modify(file, JSON.stringify({
                 items: this.getReferencesByType(type)
             }));
-            this.reloadView()
         }
+    }
+
+    scanForLinks( ) {
+
+        this.clearLinks();
+
+        this.plugin.app.vault.getFiles().forEach(( file: TFile ) => {
+            const metadata = this.plugin.app.metadataCache.getFileCache( file );
+            if ( metadata?.frontmatter && metadata.frontmatter.referenceID ) {
+                const reference = this.getReferenceById( metadata.frontmatter.referenceID );
+                if (reference) reference.links.push({ file: file });
+            }
+        })
 
     }
+
+    clearLinks() {
+        this.references.forEach((reference: Reference) => reference.links = []);
+    }
+
 
     public enrichReference( reference: IReference ): void {
         this.plugin.referenceEnricher

@@ -1,16 +1,15 @@
-import {ItemView, Setting, WorkspaceLeaf} from "obsidian";
-import ReferenceNexus from "../index";
-import "./view.css";
+import {ButtonComponent, IconName, ItemView, setIcon, Setting, WorkspaceLeaf} from "obsidian";
+import ReferenceNexus, {VIEW_TYPE} from "../index";
 import {ReferenceCard} from "./referenceCard";
 import {IReference} from "../reference_nexus";
-
-export const VIEW_TYPE_CUSTOM = "reference-view";
 
 export class ReferenceView extends ItemView {
 
     plugin: ReferenceNexus;
     filteredReferences: IReference[] = [];
     referenceContainer: HTMLElement;
+    container: HTMLElement;
+    themeChoiceContainer: HTMLElement;
     query: string = "";
 
     constructor( plugin: ReferenceNexus, leaf: WorkspaceLeaf ) {
@@ -24,8 +23,12 @@ export class ReferenceView extends ItemView {
         return "";
     }
 
+    getIcon(): IconName {
+        return "library-big";
+    }
+
     getViewType(): string {
-        return "";
+        return VIEW_TYPE;
     }
 
     filter( query: string ) {
@@ -33,23 +36,50 @@ export class ReferenceView extends ItemView {
         this.filteredReferences = this.filteredReferences.filter((reference: IReference) => {
             return Object.values(reference).filter((val: any) => {
                     if (typeof val === "string" && (val.toLowerCase().includes(query.toLowerCase()) || val.toLowerCase() === query.toLowerCase())) return true;
+                    if (Array.isArray(val) && val.length > 0 && typeof val[0] === "string" && val.map((el: string) => el.toLowerCase()).join("|").includes(query.toLowerCase())) return true;
                 }
             ).length > 0;
         })
     }
-// TODO: search based on status
-    protected async onOpen(): Promise<void> {
+
+    initialize() {
+
         this.loadComponents();
         this.loadReferences();
+    }
+
+
+
+// TODO: search based on status
+    protected async onOpen(): Promise<void> {
+        this.initialize()
     }
 
     loadComponents() {
 
         const { contentEl } = this;
         contentEl.empty();
-        contentEl.createEl("h2", { text: "Reference view" })
+        this.container = contentEl.createDiv({cls:"reference-view-container"});
+        const btnContainer = this.container.createDiv({ cls: "reference-view-theme-container" });
+        new ButtonComponent(btnContainer)
+            .setIcon('palette')
+            .setClass("reference-view-theme-button")
+            .onClick(() => {
+                this.toggleThemeOptions();
+            });
+        this.themeChoiceContainer = btnContainer.createDiv( { cls: "view-theme-options" } );
+        this.toggleThemeOptions()
+        new ButtonComponent(this.themeChoiceContainer)
+            .setClass("view-theme-option")
+            .onClick(() => {
+                console.log("hoi")
+                this.toggleThemeOptions();
+            })
 
-        new Setting(contentEl)
+        const header = this.container.createDiv({cls: "reference-view-header"})
+        header.createEl("h2", { text: "Reference view" })
+
+        new Setting(header)
             .addSearch((cb) => {
                 cb.setPlaceholder("search reference..")
                     .onChange(( query: string ) => {
@@ -60,8 +90,6 @@ export class ReferenceView extends ItemView {
                 cb.inputEl.className = "reference-view-search";
                 cb.inputEl.focus();
             })
-
-
     }
 
     loadReferences( view?: ItemView ) {
@@ -70,9 +98,8 @@ export class ReferenceView extends ItemView {
         if (this.referenceContainer) {
             this.referenceContainer.empty();
         } else {
-            this.referenceContainer = contentEl.createDiv({cls: "reference-scroll"});
-            this.referenceContainer.style.maxHeight = "88%";
-            this.referenceContainer.style.overflowY = "scroll";
+            this.referenceContainer = this.container.createDiv({cls: "reference-scroll"});
+
         }
 
         for (let reference of this.filteredReferences) {
@@ -82,9 +109,23 @@ export class ReferenceView extends ItemView {
         }
     }
 
+    toggleThemeOptions() {
+        this.themeChoiceContainer.style.display = this.themeChoiceContainer.style.display === "none" ? "flex" : "none";
+    }
+
+
+
     onunload() {
+        const { contentEl } = this;
+
+        contentEl.empty();
         this.contentEl.empty();
-        super.onunload();
+        this.containerEl.empty()
+    }
+
+    protected onClose(): Promise<void> {
+        this.containerEl.empty();
+        return super.onClose();
     }
 
 }
