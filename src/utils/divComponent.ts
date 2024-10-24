@@ -35,10 +35,11 @@ export class DivComponent extends CustomComponent {
 
     setStyle( settings: StyleSettings ) {
 
+        console.log(settings)
         for (let [property, value] of Object.entries(settings)) {
             if (this.CSS_PROPERTIES.includes(property)) {
                 // @ts-ignore
-                this.containerEl.style[property] = value;
+                this.el.style[property] = value;
             }
         }
         return this;

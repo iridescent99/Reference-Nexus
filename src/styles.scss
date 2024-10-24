@@ -43,7 +43,7 @@
 
 .reference-title {
   margin: .3em 0;
-  font-size: medium;
+  font-size: small;
   color: #ffffff;
   font-family: "Space Grotesk", sans-serif;
   word-wrap: break-word !important;         /* Break long words */
@@ -90,14 +90,14 @@
 
   .reference-type {
     opacity: 50%;
-    font-size: x-small;
+    font-size: xx-small;
     word-wrap: break-word;         /* Break long words */
     overflow-wrap: break-word;
     white-space: normal;
   }
 
   .reference-authors, .reference-platform {
-    font-size: small;
+    font-size: x-small;
     opacity: 75%;
     font-family: "Playfair Display", serif;
     word-wrap: break-word !important;         /* Break long words */
@@ -155,6 +155,7 @@
 .dashboard-progress-bar, .view-progress-bar {
   width: 100%;
   background: #333;
+  margin-top:1em;
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.7);
   border-radius: 15px;
 }
@@ -166,6 +167,9 @@
   box-shadow: inset 0 -3px 5px rgba(255, 255, 255, 0.2);
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
+  padding-left:2em;
+  font-size: small;
+  color:black;
 }
 .dashboard-progress-bar::after, .view-progress-bar::after {
   content: '';
@@ -173,7 +177,6 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.01); /* Glossy shine adjusted for dark mode */
   pointer-events: none;
