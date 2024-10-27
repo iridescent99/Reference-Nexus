@@ -2,14 +2,15 @@ import {ButtonComponent, IconName, ItemView, setIcon, Setting, WorkspaceLeaf} fr
 import ReferenceNexus, {VIEW_TYPE} from "../index";
 import {ReferenceCard} from "./referenceCard";
 import {IReference} from "../reference_nexus";
+import {DivComponent} from "../utils/divComponent";
 
 export class ReferenceView extends ItemView {
 
     plugin: ReferenceNexus;
     filteredReferences: IReference[] = [];
-    referenceContainer: HTMLElement;
-    container: HTMLElement;
-    themeChoiceContainer: HTMLElement;
+    referenceContainer: DivComponent;
+    container: DivComponent;
+    themeChoiceContainer: DivComponent;
     query: string = "";
 
     constructor( plugin: ReferenceNexus, leaf: WorkspaceLeaf ) {
@@ -59,27 +60,12 @@ export class ReferenceView extends ItemView {
 
         const { contentEl } = this;
         contentEl.empty();
-        this.container = contentEl.createDiv({cls:"reference-view-container"});
-        const btnContainer = this.container.createDiv({ cls: "reference-view-theme-container" });
-        new ButtonComponent(btnContainer)
-            .setIcon('palette')
-            .setClass("reference-view-theme-button")
-            .onClick(() => {
-                this.toggleThemeOptions();
-            });
-        this.themeChoiceContainer = btnContainer.createDiv( { cls: "view-theme-options" } );
-        this.toggleThemeOptions()
-        new ButtonComponent(this.themeChoiceContainer)
-            .setClass("view-theme-option")
-            .onClick(() => {
-                console.log("hoi")
-                this.toggleThemeOptions();
-            })
+        this.container = new DivComponent(contentEl, {cls:"reference-view-container"});
 
-        const header = this.container.createDiv({cls: "reference-view-header"})
-        header.createEl("h2", { text: "Reference view" })
+        const header = this.container.createChild("div", {cls: "reference-view-header"}) as DivComponent;
+        header.createChild("h2", { text: "Reference view" });
 
-        new Setting(header)
+        new Setting(header.el)
             .addSearch((cb) => {
                 cb.setPlaceholder("search reference..")
                     .onChange(( query: string ) => {
@@ -96,9 +82,9 @@ export class ReferenceView extends ItemView {
 
         const { contentEl } = view ? view : this;
         if (this.referenceContainer) {
-            this.referenceContainer.empty();
+            this.referenceContainer.el.empty();
         } else {
-            this.referenceContainer = this.container.createDiv({cls: "reference-scroll"});
+            this.referenceContainer = this.container.createChild("div", {cls: "reference-scroll"}) as DivComponent;
 
         }
 
@@ -110,7 +96,9 @@ export class ReferenceView extends ItemView {
     }
 
     toggleThemeOptions() {
-        this.themeChoiceContainer.style.display = this.themeChoiceContainer.style.display === "none" ? "flex" : "none";
+        this.themeChoiceContainer.setStyle({
+            display: this.themeChoiceContainer.el.style.display === "none" ? "flex" : "none"
+        })
     }
 
 

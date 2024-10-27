@@ -46,7 +46,7 @@ export class Connector {
             )
             if (response.status !== 200) {
                 new Notice("Failed to fetch results. See console for error.");
-                console.log(response.er)
+                console.log(response.text())
                 this.modal.setResults([])
             }
             // Parse the response and its contents
@@ -93,10 +93,6 @@ export class Connector {
             console.error(error.name)
             console.error(error.message)
         }
-    }
-
-    private generateHash( data: string ) {
-        return crypto.createHash('sha256').update(data).digest('hex').slice(0,24);
     }
 
     async getArticles( url: string ) {
@@ -149,7 +145,7 @@ export class Connector {
 
                     // Return a new Reference object based on the transformed data
                     return new Reference(this.modal.plugin, {
-                        id: this.generateHash(`${item.title.toLowerCase()}|${item.siteName}`),
+                        id: this.modal.plugin.tools.generateHash(`${item.title.toLowerCase()}|${item.siteName}`),
                         title: item.title || "Untitled",
                         authors: authors,
                         platform: item.siteName || "Unknown",
@@ -165,7 +161,7 @@ export class Connector {
 
                 // Return a new Reference object based on the transformed data
                 return new Reference(this.modal.plugin, {
-                    id: this.generateHash(`${item.title.toLowerCase()}|${item.siteName}`),
+                    id: this.modal.plugin.tools.generateHash(`${item.title.toLowerCase()}|${item.siteName}`),
                     title: item.title || "Untitled",
                     authors: authors,
                     platform: item.pageUrl && item.pageUrl.split(".")[1] || "Unknown",

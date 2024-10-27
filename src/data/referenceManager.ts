@@ -107,11 +107,11 @@ export class ReferenceManager {
     scanForLinks( ) {
 
         this.clearLinks();
-
+        const propertyKey = this.plugin.settings.identifier;
         this.plugin.app.vault.getFiles().forEach(( file: TFile ) => {
             const metadata = this.plugin.app.metadataCache.getFileCache( file );
-            if ( metadata?.frontmatter && metadata.frontmatter.referenceID ) {
-                const reference = this.getReferenceById( metadata.frontmatter.referenceID );
+            if ( metadata?.frontmatter && metadata.frontmatter[propertyKey] ) {
+                const reference = this.getReferenceById( metadata.frontmatter[propertyKey] );
                 if (reference) reference.links.push({ file: file });
             }
         })

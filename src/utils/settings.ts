@@ -71,6 +71,17 @@ export class NexusSettingsTab extends PluginSettingTab {
                     // TODO: reload view
                 }))
 
+        this.configContainer.createEl('h3', {text:'Property'});
+        new Setting(this.configContainer)
+            .setDesc("This value will be used as the property key for identifying links to a reference.")
+            .addText((cb) => cb.setValue(this.plugin.settings.identifier)
+                .onChange((newValue: string) => {
+                    this.plugin.settings.identifier = newValue;
+                    this.plugin.saveSettings();
+                    // TODO: reload view
+                }))
+
+
     }
 
     setAPIKey( name: string, key: string ) {

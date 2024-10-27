@@ -41,6 +41,7 @@ interface Settings {
     referencesLocation: string;
     appearInGraphView: boolean;
     showProgressInView: boolean;
+    identifier: string;
 }
 
 interface ObsidianLink {

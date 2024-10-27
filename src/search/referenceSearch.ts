@@ -14,6 +14,8 @@ import {IReference} from "../reference_nexus";
 import {ReferenceTypePicker} from "./typePicker";
 import {ReferenceType} from "./typePicker";
 import {Connector} from "../api/connector";
+import {Metric} from "../data/metric";
+import {Reference} from "../data/reference";
 
 export class ReferenceSearch extends FuzzySuggestModal<IReference> {
     private isBusy = false;
@@ -107,7 +109,14 @@ export class ReferenceSearch extends FuzzySuggestModal<IReference> {
     }
 
     getSuggestions(query: string): FuzzyMatch<IReference>[] {
-        if (!query || this.results.length === 0) return [];
+        if (!query || this.results.length === 0) return [
+            {
+                item: new Reference(this.plugin, {id: "CUSTXX", title: `Custom ${this.referenceType}`, type: this.referenceType}),
+                match: {
+                    matches: [[0,0]],
+                    score: 1
+                }
+            }];
         return this.results.map((reference: IReference, i: number) => {
             return {
                 item: reference,

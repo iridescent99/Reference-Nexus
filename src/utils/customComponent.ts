@@ -5,7 +5,7 @@ import {StyleSettings} from "../reference_nexus";
 export class CustomComponent extends Component {
 
     CSS_PROPERTIES: string[];
-    el: HTMLElement;
+    el: any;
     classPrefix: string;
 
     constructor( classPrefix: string ) {

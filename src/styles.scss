@@ -14,11 +14,15 @@
 .reference-view-header {
   font-family:  "Inter", sans-serif;
   color:grey;
+  font-size: small;
+  text-align: center;
 }
 
 .reference-scroll {
   overflow-y:scroll;
   margin-bottom: 1em;
+  padding-top:1em;
+  overflow-x:hidden;
 }
 
 .reference-view-theme-container {
@@ -45,12 +49,9 @@
   margin: .3em 0;
   font-size: small;
   color: #ffffff;
-  font-family: "Space Grotesk", sans-serif;
-  word-wrap: break-word !important;         /* Break long words */
+  word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   white-space: normal;
-
-
 }
 
 .view-theme-options {
@@ -69,21 +70,21 @@
 }
 
 .reference-container {
-  margin-top:.5em;
+  margin-top:.6em;
   margin-right: 1em;
   display:grid;
   grid-template-rows: auto auto;
   grid-template-columns: 1fr;
   padding: .2em 0 .5em 0;
-  border-bottom: .02em solid #eeeeee;
+  background:linear-gradient(60deg, #282828, #2d2d2d);
   word-wrap: break-word !important;         /* Break long words */
   overflow-wrap: break-word !important;
   white-space: normal;
+  min-height:6em;
+  border-radius: 5px;
 
 
   .content-container {
-    grid-row:2;
-    grid-column:1;
     padding:.6em .6em 0 .6em;
     box-sizing: border-box;
   }
@@ -94,6 +95,28 @@
     word-wrap: break-word;         /* Break long words */
     overflow-wrap: break-word;
     white-space: normal;
+    position:absolute;
+    top:-1.5em;
+    right:1em;
+    height:1.5em;
+    padding:.3em;
+    z-index:8;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color:black;
+    font-weight: bold;
+
+    &.book {
+      background-color: #60efe9;
+    }
+
+    &.article {
+      background: #c9beff;
+    }
+
+    &.video {
+      background:pink;
+    }
   }
 
   .reference-authors, .reference-platform {
@@ -193,6 +216,15 @@
   display:flex;
   flex-direction: column;
   row-gap: .3em;
+  z-index:9;
+  
+  button {
+    cursor: pointer;
+  }
+
+  button svg {
+    pointer-events: none;
+  }
 }
 
 .close-button, .edit-button {
@@ -201,6 +233,7 @@
 
 .reference-container {
   position: relative;
+  width:100%;
 }
 
 .button-container {

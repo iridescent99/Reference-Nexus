@@ -1,14 +1,15 @@
-import {IReference} from "../reference_nexus";
+import {IReference, StyleSettings} from "../reference_nexus";
 import {ReferenceView} from "./referenceView";
 import {ButtonComponent, Component, Notice} from "obsidian";
 import {EnrichMode} from "../data/referenceEnricher";
 import {reference} from "@popperjs/core";
+import {DivComponent} from "../utils/divComponent";
 
 
 export class ReferenceCard extends Component {
 
     data: IReference;
-    containerEl: HTMLElement
+    containerEl: DivComponent
     buttons: ButtonComponent[] = [];
     view: ReferenceView;
     DISPLAY_KEYS: string[] = ["title", "authors", "type"];
@@ -18,7 +19,7 @@ export class ReferenceCard extends Component {
         super();
         this.data = reference;
         this.view = view;
-        this.containerEl = view.referenceContainer.createDiv()
+        this.containerEl = new DivComponent(view.referenceContainer.el)
         if (reference.type === "article") this.DISPLAY_KEYS = ["title", "platform", "type"];
 
         // this.data = reference;
@@ -32,20 +33,20 @@ export class ReferenceCard extends Component {
         // TODO: add tooltip on hover progress bars
         // TODO: linear gradient for progress color
 
-        this.registerDomEvent(this.containerEl, 'dblclick', () => {
+        this.containerEl.on('dblclick', () => {
             this.view.plugin.referenceDashboard.setReference( this.data )
                 .open();
         })
-        this.containerEl.className = "reference-container";
-        const btnContainer = this.containerEl.createDiv({cls: "reference-button-container"})
-        this.buttons.push(new ButtonComponent(btnContainer)
+        this.containerEl.setClass("reference-container");
+        const btnContainer = this.containerEl.createChild("div", {cls: "reference-button-container"})
+        this.buttons.push(new ButtonComponent(btnContainer.el)
             // TODO: imrpove click surface 
             .setIcon('cross')
             .setClass("close-button")
             .onClick(() => {
                 this.view.plugin.referenceManager.removeReference( this.data );
             }));
-        this.buttons.push(new ButtonComponent(btnContainer)
+        this.buttons.push(new ButtonComponent(btnContainer.el)
             // TODO: imrpove click surface
             .setIcon('pencil')
             .setClass("edit-button")
@@ -57,15 +58,15 @@ export class ReferenceCard extends Component {
             }));
         this.buttons.forEach((button: ButtonComponent) => button.buttonEl.style.display = "none");
 
-        this.registerDomEvent(this.containerEl, 'mouseenter', () => {
+        this.containerEl.on('mouseenter', () => {
             this.enableButtons()
         })
-        this.registerDomEvent(this.containerEl, 'mouseleave', () => {
+        this.containerEl.on( 'mouseleave', () => {
             this.disableButtons()
-        }, {});
-        this.registerDomEvent(this.containerEl, 'contextmenu', () => {
+        });
+        this.containerEl.on( 'contextmenu', () => {
             this.copyId()
-        }, {});
+        });
 
         this.loadContent();
         if (this.view.plugin.settings.showProgressInView) this.loadMetrics();
@@ -74,7 +75,7 @@ export class ReferenceCard extends Component {
 
     copyId() {
         try {
-            navigator.clipboard.writeText(this.data.id).then(() => new Notice("Id copied to clipboard"));
+            navigator.clipboard.writeText(this.data.id).then(() => new Notice("id copied to clipboard"));
         } catch (e) {
             new Notice("Failed to copy id to clipboard.");
             console.error(e)
@@ -82,34 +83,44 @@ export class ReferenceCard extends Component {
     }
 
     loadContent() {
-        const contentContainer = this.containerEl.createDiv({cls: "content-container"})
+        const contentContainer = this.containerEl.createChild("div", {cls: "content-container"}) as DivComponent;
         for ( let [key, value] of Object.entries(this.data)) {
             if (this.DISPLAY_KEYS.includes(key)) {
-                contentContainer.createDiv( { cls: `reference-${key}` } ).textContent = typeof value === "string" ? value : value.join(", ");
+                contentContainer.createChild("div", { cls: `reference-${key} ${key === "type" && `${value}`}` } )
+                    .setText(typeof value === "string" ? value : value.join(", "))
             }
         }
         if (this.data.image) {
-            const img = this.containerEl.createEl("img", { cls: "reference-image" });
-            img.src = this.data.image;
+            // const img = contentContainer.createChild("img", { cls: "reference-image" });
+            // img.el.src = this.data.image;
         } else {
-            contentContainer.style.gridRow = "1/2";
+            contentContainer.setStyle({
+                gridRow: "1/2"
+            });
         }
     }
 
     loadMetrics() {
 
-        const metricContainer = this.containerEl.createDiv( { cls: "view-metric-container" } );
+        const metricContainer = this.containerEl.createChild("div", { cls: "view-metric-container" } ) as DivComponent;
         for ( let metric of this.data.metrics ) {
-            const metricDiv = metricContainer.createDiv( { cls: "metric-div" } );
-            const progressBar = metricDiv.createDiv( { cls: "view-progress-bar" } );
+            const metricDiv = metricContainer.createChild("div", { cls: "metric-div" } ) as DivComponent;
+            const progressBar = metricDiv.createChild("div", { cls: "view-progress-bar" } ) as DivComponent;
             const progress = metric.calculateProgress()
-            const progressDiv = progressBar.createDiv( { cls: "progress" } )
-            progressDiv.style.width = `${progress}%`;
-            if (progress > 95) {
-                progressDiv.style.borderBottomRightRadius = "15px";
-                progressDiv.style.borderTopRightRadius = "15px";
+            const progressDiv = progressBar.createChild("div", { cls: "progress" } );
+
+            let style: StyleSettings = {
+                width: `${progress}%`,
+                background: metric.color
             }
-            progressDiv.style.background = metric.color;
+            if (progress > 95) {
+                style = {
+                    ...style,
+                    borderBottomRightRadius: "15px",
+                    borderTopRightRadius: "15px"
+                }
+            }
+            progressDiv.setStyle(style);
         }
 
     }
@@ -123,7 +134,7 @@ export class ReferenceCard extends Component {
     }
 
     onunload() {
-        this.containerEl.empty()
+        this.containerEl.el.empty()
     }
 
 

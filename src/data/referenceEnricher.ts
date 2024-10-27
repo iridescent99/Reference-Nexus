@@ -13,6 +13,7 @@ export class ReferenceEnricher extends Modal {
     mode: EnrichMode = EnrichMode.ADD;
     metricContainer: HTMLElement;
     currentMetric: IMetric;
+    isCustom: boolean = false;
     EDIT_KEYS: string[] = ["title", "authors", "pageCount", "chapterCount"];
     PLACEHOLDER_KEYS: string[] = ["id", "type"];
     plugin: ReferenceNexus;
@@ -38,6 +39,7 @@ export class ReferenceEnricher extends Modal {
 
         this.reference = reference;
         this.currentMetric = reference.metrics[0];
+        if (this.reference.id == "CUSTXX") this.isCustom = true;
         return this;
 
     }
@@ -175,7 +177,10 @@ export class ReferenceEnricher extends Modal {
         new ButtonComponent( btnContainer )
             .setButtonText("save reference")
             .onClick((cb) => {
-                if (this.mode === EnrichMode.ADD) this.plugin.referenceManager.addReference( this.reference );
+                if (this.mode === EnrichMode.ADD) {
+                    if (this.isCustom) this.reference.id = this.plugin.tools.generateHash(`${this.reference.title.toLowerCase()}|custom`)
+                    this.plugin.referenceManager.addReference( this.reference );
+                }
                 if (this.mode === EnrichMode.EDIT) this.plugin.referenceManager.updateReference( this.reference );
                 this.close();
             });

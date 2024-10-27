@@ -46,5 +46,6 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     referencesLocation: "reference nexus",
     appearInGraphView: false,
-    showProgressInView: false
+    showProgressInView: false,
+    identifier: "referenceID"
 }

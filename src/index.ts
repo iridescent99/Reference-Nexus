@@ -8,6 +8,7 @@ import "./styles.css";
 import {DEFAULT_SETTINGS} from "./utils/defaultSettings";
 import {ReferenceEnricher} from "./data/referenceEnricher";
 import {ReferenceDashboard} from "./data/referenceDashboard";
+import {Tools} from "./utils/tools";
 export const VIEW_TYPE = "reference-nexus-view";
 
 export default class ReferenceNexus extends Plugin {
@@ -17,6 +18,7 @@ export default class ReferenceNexus extends Plugin {
     referenceEnricher: ReferenceEnricher;
     referenceDashboard: ReferenceDashboard;
     referenceLeaf: WorkspaceLeaf;
+    tools: Tools;
     scanTimeOut: number;
 
     async onload() {
@@ -38,6 +40,7 @@ export default class ReferenceNexus extends Plugin {
 
     initialize() {
 
+        this.tools = new Tools(this);
         this.referenceManager = new ReferenceManager(this);
         this.referenceEnricher = new ReferenceEnricher(this);
         this.referenceDashboard = new ReferenceDashboard(this)

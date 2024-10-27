@@ -4,11 +4,11 @@ import {CustomComponent} from "./customComponent";
 
 export class ElementComponent extends CustomComponent {
 
-    element: HTMLElement;
+    el: any;
 
-    constructor( tag: keyof HTMLElementTagNameMap, parent: HTMLElement, config: DomElementInfo = {} ) {
-        super();
-        this.element = parent.createEl(tag, config);
+    constructor( tag: keyof HTMLElementTagNameMap, parent: HTMLElement, config: DomElementInfo = {},  classPrefix: string = "" ) {
+        super(classPrefix);
+        this.el = parent.createEl(tag, config) as HTMLElementTagNameMap[typeof tag];
     }
 
 }
