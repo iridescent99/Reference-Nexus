@@ -17,6 +17,7 @@ export class ProgressBar extends DivComponent {
         this.registerDragEvent();
         this.metric = metric;
         this.classPrefix = classPrefix;
+        this.setClass(`${this.classPrefix}-progress-bar-container`);
         this.initialize();
 
     }

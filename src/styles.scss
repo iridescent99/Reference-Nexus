@@ -313,5 +313,22 @@
 .dashboard-progress-container {
   grid-row: 2/4;
   grid-column: 1/3;
+  border-left: 1px solid white;
+
+  .reference-dashboard-progress-bar-container {
+    margin-top:2em;
+  }
+
+  .reference-dashboard-metric-title {
+    padding-left:.5em;
+    padding-bottom:.5em;
+  }
+
+  .reference-dashboard-progress {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding-left:1em;
+    color: #1f1f1f;
+  }
 }
 

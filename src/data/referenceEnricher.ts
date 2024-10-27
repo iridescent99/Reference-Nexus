@@ -75,12 +75,14 @@ export class ReferenceEnricher extends Modal {
                         )
                             .onChange((newVal) => {
                                 this.reference.updateProperty( key, newVal );
+                                this.plugin.referenceManager.updateReference(this.reference)
                             })
                     })
             } else if (this.PLACEHOLDER_KEYS.includes(key)) {
                 new Setting(container.el)
                     .setName(key)
                     .addText((cb) => cb.setPlaceholder(value).setDisabled(true))
+
             }
 
         }

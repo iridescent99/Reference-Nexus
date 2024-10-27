@@ -66,6 +66,9 @@ export class Reference implements IReference {
             case "chapterCount":
                 this.chapterCount = parseInt(value);
                 break;
+            case "image":
+                this.image = value;
+                break;
             default:
                 break;
 
