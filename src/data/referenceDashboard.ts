@@ -4,13 +4,17 @@ import {IReference} from "../reference_nexus";
 import {DivComponent} from "../utils/divComponent";
 import {ProgressBar} from "../utils/progressBar";
 import {ElementComponent} from "../utils/elementComponent";
+import {DashboardMetric} from "../utils/dashboardMetric";
 
 
 export class ReferenceDashboard extends Modal{
 
     plugin: ReferenceNexus;
     reference: IReference;
-    metricsDiv: DivComponent;
+    progressContainer: DivComponent;
+    header: DivComponent;
+    imageContainer: DivComponent;
+
 
     constructor( plugin: ReferenceNexus ) {
         super(plugin.app);
@@ -20,9 +24,21 @@ export class ReferenceDashboard extends Modal{
     onOpen() {
 
         const { contentEl } = this;
-        new ElementComponent("h2", contentEl, { text: this.reference.title, cls: "reference-title" });
-        this.metricsDiv = new DivComponent(contentEl, { cls: "dashboard-metrics-container" } )
-        new ElementComponent("p", contentEl, { cls: "dashboard-authors", text: this.reference.authors.join(", ") })
+        contentEl.classList.add("dashboard-container");
+
+        this.header = new DivComponent(contentEl, { cls: "reference-dashboard-header" })
+        this.header.createChild("h2", { text: this.reference.title, cls: "reference-title" })
+        this.header.createChild("p",{ cls: "reference-authors", text: this.reference.authors.join(", ") })
+
+
+        this.progressContainer = new DivComponent(contentEl, { cls: "dashboard-progress-container" } );
+        if (this.reference.image) {
+            this.imageContainer = new DivComponent(contentEl, { cls: "dashboard-image-container" });
+            this.imageContainer.createChild("img", { cls: "dashboard-image"}).el.src = this.reference.image;
+
+
+        }
+
         new ElementComponent("br", contentEl);
         this.loadMetrics()
         super.onOpen();
@@ -33,8 +49,8 @@ export class ReferenceDashboard extends Modal{
         const { contentEl } = this;
 
         for ( let metric of this.reference.metrics ) {
-            const metricDiv = new DivComponent(contentEl, { cls: "metric-div" } );
-            const progressDiv = new ProgressBar( metricDiv.el, metric, "dashboard" );
+
+            this.progressContainer.addChild(new DashboardMetric(this.progressContainer.el, metric, {}, "reference-dashboard" ))
 
         }
 

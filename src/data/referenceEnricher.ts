@@ -1,6 +1,8 @@
 import {ButtonComponent, Component, Modal, Notice, Setting} from "obsidian";
 import ReferenceNexus from "../index";
 import {IMetric, IReference} from "../reference_nexus";
+import {DivComponent} from "../utils/divComponent";
+import {ElementComponent} from "../utils/elementComponent";
 
 export enum EnrichMode {
     ADD="add",
@@ -11,10 +13,10 @@ export class ReferenceEnricher extends Modal {
 
     private reference: IReference;
     mode: EnrichMode = EnrichMode.ADD;
-    metricContainer: HTMLElement;
+    metricContainer: DivComponent;
     currentMetric: IMetric;
     isCustom: boolean = false;
-    EDIT_KEYS: string[] = ["title", "authors", "pageCount", "chapterCount"];
+    EDIT_KEYS: string[] = ["title", "authors", "pageCount", "chapterCount", "image"];
     PLACEHOLDER_KEYS: string[] = ["id", "type"];
     plugin: ReferenceNexus;
 
@@ -24,7 +26,7 @@ export class ReferenceEnricher extends Modal {
     }
 
     generateEditKeys() {
-        if (this.reference.type === "article") return ["title", "authors", "pageCount", "platform", "url"]
+        if (this.reference.type === "article") return ["title", "authors", "pageCount", "platform", "url", "image"]
         if (this.reference.type === "video") return ["title", "authors", "platform", "url"];
         if (this.reference.type === "research paper") return ["title", "authors", "url", "pageCount"]
         if (this.reference.type !== "book") return [...this.EDIT_KEYS, "platform"];
@@ -49,9 +51,9 @@ export class ReferenceEnricher extends Modal {
 
         console.log(this.reference)
         const { contentEl } = this;
-        contentEl.createEl("h2", { text: "Reference Enricher" })
-        contentEl.createEl("p", { text: "Adjust the configurations for this reference and choose your preferred metrics." })
-        contentEl.createEl("br")
+        new ElementComponent("h2", contentEl, { text: "Reference Enricher" })
+        new ElementComponent("p",  contentEl,{ text: "Adjust the configurations for this reference and choose your preferred metrics." })
+        new ElementComponent("br",  contentEl)
         this.createSettings()
             .createMetrics();
 
@@ -60,12 +62,12 @@ export class ReferenceEnricher extends Modal {
     createSettings() {
 
         const { contentEl } = this;
-        const container = contentEl.createDiv();
+        const container = new DivComponent(contentEl);
 
         for ( let [key, value] of Object.entries(this.reference)) {
 
             if (this.generateEditKeys().includes(key)) {
-                new Setting(container)
+                new Setting(container.el)
                     .setName(key)
                     .addText((cb) => {
                         cb.setValue(
@@ -76,14 +78,14 @@ export class ReferenceEnricher extends Modal {
                             })
                     })
             } else if (this.PLACEHOLDER_KEYS.includes(key)) {
-                new Setting(container)
+                new Setting(container.el)
                     .setName(key)
                     .addText((cb) => cb.setPlaceholder(value).setDisabled(true))
             }
 
         }
 
-        container.createEl("br");
+        container.createChild("br");
         return this;
 
     }
@@ -91,14 +93,14 @@ export class ReferenceEnricher extends Modal {
     createMetrics() {
 
         const { contentEl } = this;
-        this.metricContainer = contentEl.createDiv();
-        this.metricContainer.createEl("h3", { text: "Metrics" });
+        this.metricContainer = new DivComponent(contentEl);
+        this.metricContainer.createChild("h3", { text: "Metrics" });
 
         Object.entries(this.currentMetric).forEach(([key, value]) => {
 
             if ( ["isBinary", "completed"].includes(key) ) {
 
-                new Setting( this.metricContainer )
+                new Setting( this.metricContainer.el )
                     .setName(key)
 
                     .addToggle((cb) => {
@@ -114,9 +116,9 @@ export class ReferenceEnricher extends Modal {
 
             } else if (key === "color") {
 
-                new Setting( this.metricContainer )
+                new Setting( this.metricContainer.el )
                     .setName(key)
-                    .setDesc("The color that will be used for the progress bar")
+                    .setDesc("The color that will be used for the progress bar.")
                     .addColorPicker((cb) => {
                         cb.onChange((newValue) => {
                             this.currentMetric.updateMetric(key, newValue);
@@ -126,7 +128,7 @@ export class ReferenceEnricher extends Modal {
 
             } else {
                 if (!(this.currentMetric.isBinary && ["currentUnit", 'totalUnits', "unit"].includes(key))) {
-                    new Setting( this.metricContainer )
+                    new Setting( this.metricContainer.el )
                         .setName(key)
                         .setDesc(key === "unit" ? "The unit used to measure your progress." : "")
                         .addText((cb) => {
@@ -147,18 +149,18 @@ export class ReferenceEnricher extends Modal {
         })
 
 
-        const moveMetric =  this.metricContainer.createDiv( { cls: "button-container-move-metric" } );
+        const moveMetric =  this.metricContainer.createChild("div", { cls: "button-container-move-metric" } );
 
         const currentMetricIndex = this.reference.metrics.indexOf(this.currentMetric);
 
-        const btnLeft = new ButtonComponent( moveMetric  )
+        const btnLeft = new ButtonComponent( moveMetric.el  )
             .setIcon('move-left')
             .onClick(() => {
                 this.currentMetric = this.reference.metrics[ currentMetricIndex - 1 ];
                 this.reloadMetrics();
             })
         if ( currentMetricIndex === 0 ) btnLeft.setDisabled(true);
-        const btnRight = new ButtonComponent( moveMetric )
+        const btnRight = new ButtonComponent( moveMetric.el )
             .setIcon('move-right')
             .onClick(() => {
                 this.currentMetric = this.reference.metrics[ currentMetricIndex + 1 ];
@@ -166,15 +168,15 @@ export class ReferenceEnricher extends Modal {
             })
         if ( currentMetricIndex === this.reference.metrics.length - 1 ) btnRight.setDisabled(true);
 
-        const btnContainer = this.metricContainer.createDiv( { cls: "button-container" } )
-        new ButtonComponent( btnContainer )
+        const btnContainer = this.metricContainer.createChild("div", { cls: "button-container" } )
+        new ButtonComponent( btnContainer.el )
             .setButtonText("add metric")
             .onClick((cb) => {
                 this.reference.createMetric();
                 this.currentMetric = this.reference.metrics[this.reference.metrics.length - 1];
                 this.reloadMetrics();
             });
-        new ButtonComponent( btnContainer )
+        new ButtonComponent( btnContainer.el )
             .setButtonText("delete metric")
             .onClick((cb) => {
                 if (currentMetricIndex === 0 && this.reference.metrics.length === 1) new Notice("Please create another metric before deleting your only metric.")
@@ -185,7 +187,7 @@ export class ReferenceEnricher extends Modal {
                     this.reloadMetrics();
                 }
             });
-        new ButtonComponent( btnContainer )
+        new ButtonComponent( btnContainer.el )
             .setButtonText("save reference")
             .onClick((cb) => {
                 if (this.mode === EnrichMode.ADD) {
@@ -202,7 +204,7 @@ export class ReferenceEnricher extends Modal {
     }
 
     reloadMetrics() {
-        this.metricContainer.empty();
+        this.metricContainer.el.empty();
         this.createMetrics();
     }
 
