@@ -43,7 +43,7 @@
 .reference-title {
   margin: 0.3em 0;
   font-size: small;
-  color: #ffffff;
+  color: #d0d0d0;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   white-space: normal;
@@ -204,9 +204,16 @@
 }
 .reference-button-container button {
   cursor: pointer;
+  width: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 .reference-button-container button svg {
   pointer-events: none;
+  height: 60%;
+  color: #101010;
 }
 
 .reference-container {

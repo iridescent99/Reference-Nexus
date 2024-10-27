@@ -1,4 +1,4 @@
-import {ButtonComponent, Component, Modal, Setting } from "obsidian";
+import {ButtonComponent, Component, Modal, Notice, Setting} from "obsidian";
 import ReferenceNexus from "../index";
 import {IMetric, IReference} from "../reference_nexus";
 
@@ -26,6 +26,7 @@ export class ReferenceEnricher extends Modal {
     generateEditKeys() {
         if (this.reference.type === "article") return ["title", "authors", "pageCount", "platform", "url"]
         if (this.reference.type === "video") return ["title", "authors", "platform", "url"];
+        if (this.reference.type === "research paper") return ["title", "authors", "url", "pageCount"]
         if (this.reference.type !== "book") return [...this.EDIT_KEYS, "platform"];
         return this.EDIT_KEYS;
     }
@@ -115,6 +116,7 @@ export class ReferenceEnricher extends Modal {
 
                 new Setting( this.metricContainer )
                     .setName(key)
+                    .setDesc("The color that will be used for the progress bar")
                     .addColorPicker((cb) => {
                         cb.onChange((newValue) => {
                             this.currentMetric.updateMetric(key, newValue);
@@ -126,15 +128,18 @@ export class ReferenceEnricher extends Modal {
                 if (!(this.currentMetric.isBinary && ["currentUnit", 'totalUnits', "unit"].includes(key))) {
                     new Setting( this.metricContainer )
                         .setName(key)
+                        .setDesc(key === "unit" ? "The unit used to measure your progress." : "")
                         .addText((cb) => {
                             cb.setValue(
-                                ["currentUnit", "totalUnits"].includes(key) ? value.toString() : value
+                                ["currentUnit", "totalUnits"].includes(key) ? (
+                                    (this.currentMetric.unit === "chapter" && this.reference.chapterCount && this.reference.chapterCount != -1) ? this.reference.chapterCount.toString() : value.toString()) : value
                             )
                                 .onChange((newValue) => {
                                     this.currentMetric.updateMetric(key, newValue);
                                     this.plugin.referenceManager.updateReference( this.reference );
                                 })
                         })
+
                 }
 
 
@@ -166,13 +171,19 @@ export class ReferenceEnricher extends Modal {
             .setButtonText("add metric")
             .onClick((cb) => {
                 this.reference.createMetric();
+                this.currentMetric = this.reference.metrics[this.reference.metrics.length - 1];
                 this.reloadMetrics();
             });
         new ButtonComponent( btnContainer )
             .setButtonText("delete metric")
             .onClick((cb) => {
-                this.reference.deleteMetric( this.currentMetric );
-                this.reloadMetrics();
+                if (currentMetricIndex === 0 && this.reference.metrics.length === 1) new Notice("Please create another metric before deleting your only metric.")
+                else {
+                    this.reference.deleteMetric( this.currentMetric );
+                    this.currentMetric = currentMetricIndex > 0 ? this.reference.metrics[ currentMetricIndex - 1  ] :
+                        this.reference.metrics[ currentMetricIndex + 1 ];
+                    this.reloadMetrics();
+                }
             });
         new ButtonComponent( btnContainer )
             .setButtonText("save reference")

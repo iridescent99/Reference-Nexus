@@ -36,7 +36,7 @@ export class Reference implements IReference {
     }
 
     createMetric() {
-        this.metrics.push(new Metric( { name: "reading", unit:"chapter" } ));
+        this.metrics.push(new Metric( { name: "new metric", unit:"chapter" } ));
     }
 
     deleteMetric( metric: IMetric ) {
