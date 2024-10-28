@@ -50,7 +50,6 @@
   box-sizing: border-box;
 }
 .reference-container .reference-type {
-  opacity: 50%;
   font-size: xx-small;
   word-wrap: break-word;
   /* Break long words */
@@ -68,13 +67,19 @@
   font-weight: bold;
 }
 .reference-container .reference-type.book {
-  background-color: #60efe9;
+  background-color: #7ddeda;
 }
 .reference-container .reference-type.article {
   background: #c9beff;
 }
 .reference-container .reference-type.video {
   background: pink;
+}
+.reference-container .reference-type.research-paper {
+  background: #9ef3ad;
+}
+.reference-container .reference-type.course {
+  background: #e3f39e;
 }
 .reference-container .reference-authors, .reference-container .reference-platform {
   font-size: x-small;
@@ -241,6 +246,7 @@
 /* --------------- DASHBOARD ---------------------- */
 .modal:has(.dashboard-container) {
   width: 65%;
+  overflow: hidden;
 }
 
 .dashboard-container {
@@ -297,6 +303,11 @@
   border-bottom-right-radius: 15px;
   padding-left: 1em;
   color: #1f1f1f;
+  position: absolute;
+}
+.dashboard-progress-container .reference-dashboard-progress-text {
+  position: absolute;
+  right: -3em;
 }
 
 /*# sourceMappingURL=styles.css.map */

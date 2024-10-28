@@ -22,9 +22,6 @@ export class ReferenceCard extends Component {
         this.containerEl = new DivComponent(view.referenceContainer.el)
         if (reference.type === "article") this.DISPLAY_KEYS = ["title", "platform", "type"];
 
-        // this.data = reference;
-        // view.contentEl.appendChild( this.container );
-
         return this;
 
     }
@@ -86,7 +83,7 @@ export class ReferenceCard extends Component {
         const contentContainer = this.containerEl.createChild("div", {cls: "content-container"}) as DivComponent;
         for ( let [key, value] of Object.entries(this.data)) {
             if (this.DISPLAY_KEYS.includes(key)) {
-                contentContainer.createChild("div", { cls: `reference-${key} ${key === "type" && `${value}`}` } )
+                contentContainer.createChild("div", { cls: `reference-${key} ${key === "type" && `${value.replace(' ', '-')}`}` } )
                     .setText(typeof value === "string" ? value : value.join(", "))
             }
         }

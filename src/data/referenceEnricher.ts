@@ -16,7 +16,7 @@ export class ReferenceEnricher extends Modal {
     metricContainer: DivComponent;
     currentMetric: IMetric;
     isCustom: boolean = false;
-    EDIT_KEYS: string[] = ["title", "authors", "pageCount", "chapterCount", "image"];
+    EDIT_KEYS: string[] = ["title", "authors", "pageCount", "chapterCount", "url", "image", "notePath"];
     PLACEHOLDER_KEYS: string[] = ["id", "type"];
     plugin: ReferenceNexus;
 
@@ -26,10 +26,10 @@ export class ReferenceEnricher extends Modal {
     }
 
     generateEditKeys() {
-        if (this.reference.type === "article") return ["title", "authors", "pageCount", "platform", "url", "image"]
-        if (this.reference.type === "video") return ["title", "authors", "platform", "url"];
-        if (this.reference.type === "research paper") return ["title", "authors", "url", "pageCount"]
-        if (this.reference.type !== "book") return [...this.EDIT_KEYS, "platform"];
+        if (this.reference.type === "article") return ["title", "authors", "pageCount", "platform", "url", "image", "notePath"]
+        if (this.reference.type === "video") return ["title", "authors", "platform", "url", "notePath"];
+        if (this.reference.type === "research paper") return ["title", "authors", "url", "pageCount", "notePath"]
+        if (this.reference.type !== "book") return [...this.EDIT_KEYS, "platform", "notePath"];
         return this.EDIT_KEYS;
     }
 
@@ -40,6 +40,7 @@ export class ReferenceEnricher extends Modal {
 
     setReference( reference: IReference ): ReferenceEnricher {
 
+        console.log(reference)
         this.reference = reference;
         this.currentMetric = reference.metrics[0];
         if (this.reference.id == "CUSTXX") this.isCustom = true;
@@ -49,7 +50,6 @@ export class ReferenceEnricher extends Modal {
 
     onOpen() {
 
-        console.log(this.reference)
         const { contentEl } = this;
         new ElementComponent("h2", contentEl, { text: "Reference Enricher" })
         new ElementComponent("p",  contentEl,{ text: "Adjust the configurations for this reference and choose your preferred metrics." })
@@ -75,7 +75,7 @@ export class ReferenceEnricher extends Modal {
                         )
                             .onChange((newVal) => {
                                 this.reference.updateProperty( key, newVal );
-                                this.plugin.referenceManager.updateReference(this.reference)
+                                if (this.mode === EnrichMode.EDIT) this.plugin.referenceManager.updateReference(this.reference)
                             })
                     })
             } else if (this.PLACEHOLDER_KEYS.includes(key)) {
@@ -136,7 +136,7 @@ export class ReferenceEnricher extends Modal {
                         .addText((cb) => {
                             cb.setValue(
                                 ["currentUnit", "totalUnits"].includes(key) ? (
-                                    (this.currentMetric.unit === "chapter" && this.reference.chapterCount && this.reference.chapterCount != -1) ? this.reference.chapterCount.toString() : value.toString()) : value
+                                    (this.currentMetric.unit === "chapter" && key === "totalUnits"&& this.reference.chapterCount && this.reference.chapterCount != -1) ? this.reference.chapterCount.toString() : value.toString()) : value
                             )
                                 .onChange((newValue) => {
                                     this.currentMetric.updateMetric(key, newValue);
@@ -194,6 +194,7 @@ export class ReferenceEnricher extends Modal {
             .onClick((cb) => {
                 if (this.mode === EnrichMode.ADD) {
                     if (this.isCustom) this.reference.id = this.plugin.tools.generateHash(`${this.reference.title.toLowerCase()}|custom`)
+                    // this.reference.syncNote();
                     this.plugin.referenceManager.addReference( this.reference );
                 }
                 if (this.mode === EnrichMode.EDIT) this.plugin.referenceManager.updateReference( this.reference );

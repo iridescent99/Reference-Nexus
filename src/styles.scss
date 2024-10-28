@@ -57,7 +57,6 @@
   }
 
   .reference-type {
-    opacity: 50%;
     font-size: xx-small;
     word-wrap: break-word;         /* Break long words */
     overflow-wrap: break-word;
@@ -74,7 +73,7 @@
     font-weight: bold;
 
     &.book {
-      background-color: #60efe9;
+      background-color: #7ddeda;
     }
 
     &.article {
@@ -83,6 +82,14 @@
 
     &.video {
       background:pink;
+    }
+
+    &.research-paper {
+      background: #9ef3ad;
+    }
+
+    &.course {
+      background: #e3f39e;
     }
   }
 
@@ -267,6 +274,7 @@
 
 .modal:has(.dashboard-container) {
   width:65%;
+  overflow: hidden;
 }
 
 .dashboard-container {
@@ -329,6 +337,12 @@
     border-bottom-right-radius: 15px;
     padding-left:1em;
     color: #1f1f1f;
+    position: absolute;
+  }
+
+  .reference-dashboard-progress-text {
+    position: absolute;
+    right:-3em;
   }
 }
 

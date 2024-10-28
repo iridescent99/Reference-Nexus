@@ -47,5 +47,19 @@ export const DEFAULT_SETTINGS: Settings = {
     referencesLocation: "reference nexus",
     appearInGraphView: false,
     showProgressInView: false,
-    identifier: "referenceID"
+    identifier: "referenceID",
+    templateLocations: {
+        book: "reference nexus/templates/book.md",
+        article: "reference nexus/templates/article.md",
+        video: "reference nexus/templates/video.md",
+        "research paper": "reference nexus/templates/researchPaper.md",
+        course: "reference nexus/templates/course.md"
+    },
+    referenceNoteLocations: {
+        book: "",
+        article: "",
+        video: "",
+        "research paper": "",
+        course: ""
+    }
 }

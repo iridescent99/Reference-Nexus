@@ -57,6 +57,7 @@ export class ReferenceManager {
     }
 
     async writeReference( reference: IReference ) {
+        // TODO: remove note from reference before saving
         const referencePath = `${this.plugin.settings.referencesLocation}/${reference.type}.json`;
         if (!this.plugin.app.vault.getAbstractFileByPath(referencePath)) {
             if (!this.plugin.app.vault.getFolderByPath(this.plugin.settings.referencesLocation)) {
@@ -75,11 +76,11 @@ export class ReferenceManager {
     }
 
     getReferenceById( id: string ) {
-        return this.references.filter((reference: Reference) => reference.id === id)[0] || null;
+        return this.references.filter((reference: IReference) => reference.id === id)[0] || null;
     }
 
     getReferencesByType( type: ReferenceType ) {
-        return this.references.filter((reference: Reference) => reference.type === type);
+        return this.references.filter((reference: IReference) => reference.type === type);
     }
 
     async updateJSON( type?: ReferenceType ) {
@@ -121,7 +122,6 @@ export class ReferenceManager {
     clearLinks() {
         this.references.forEach((reference: Reference) => reference.links = []);
     }
-
 
     public enrichReference( reference: IReference ): void {
         this.plugin.referenceEnricher

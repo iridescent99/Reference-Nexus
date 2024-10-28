@@ -1,5 +1,6 @@
 import {ReferenceType} from "./search/typePicker";
 import {TFile} from "obsidian";
+import ReferenceNexus from "./index";
 
 interface KeyConfig {
     [key: string]: string;
@@ -35,6 +36,15 @@ interface ReferenceMetric {
     video: IMetric[];
 }
 
+interface TemplateLocationMap {
+    [key: string]: string;
+    book: string;
+    course: string;
+    video: string;
+    "research paper": string;
+    article: string;
+}
+
 interface Settings {
     metrics: Object<ReferenceMetric>;
     apiKeys: ApiKeySet;
@@ -42,6 +52,8 @@ interface Settings {
     appearInGraphView: boolean;
     showProgressInView: boolean;
     identifier: string;
+    templateLocations: TemplateLocationMap;
+    referenceNoteLocations: TemplateLocationMap;
 }
 
 interface ObsidianLink {
@@ -56,6 +68,7 @@ interface Metadata {
 
 interface IReference {
     [key: string]: any;
+    plugin: ReferenceNexus;
     id: string;
     title: string;
     authors: string[];
@@ -65,12 +78,15 @@ interface IReference {
     type: ReferenceType;
     metrics: IMetric[];
     url: string;
+    note: TFile;
     image: string;
+    notePath: string;
     links: ObsidianLink[];
     createMetric: () => void
     deleteMetric: ( metric: IMetric ) => void;
     linkExists: ( id: string ) => boolean;
     updateProperty: ( key: string, value: string ) => void;
+    syncNote: () => void;
 }
 
 interface StyleSettings {

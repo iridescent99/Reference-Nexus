@@ -68,7 +68,6 @@ export class NexusSettingsTab extends PluginSettingTab {
                 .onChange((newValue: boolean) => {
                     this.plugin.settings.showProgressInView = newValue;
                     this.plugin.saveSettings();
-                    // TODO: reload view
                 }))
 
         this.configContainer.createEl('h3', {text:'Property'});
@@ -78,9 +77,31 @@ export class NexusSettingsTab extends PluginSettingTab {
                 .onChange((newValue: string) => {
                     this.plugin.settings.identifier = newValue;
                     this.plugin.saveSettings();
-                    // TODO: reload view
                 }))
 
+        this.configContainer.createEl('h3', {text: 'Reference Template Locations'});
+        for (let [key, value] of Object.entries(this.plugin.settings.templateLocations)) {
+            new Setting(this.configContainer)
+                .setName(key)
+                // TODO: Insert filepicker
+                .addText((cb) => cb.setValue(value)
+                    .onChange((newValue: string) => {
+                        this.plugin.settings.templateLocations[key] = newValue;
+                        this.plugin.saveSettings();
+                    }))
+        }
+
+        this.configContainer.createEl('h3', {text: 'Reference Note Locations'});
+        for (let [key, value] of Object.entries(this.plugin.settings.referenceNoteLocations)) {
+            new Setting(this.configContainer)
+                .setName(key)
+                // TODO: Insert folderpicker
+                .addText((cb) => cb.setValue(value)
+                    .onChange((newValue: string) => {
+                        this.plugin.settings.referenceNoteLocations[key] = newValue;
+                        this.plugin.saveSettings();
+                    }))
+        }
 
     }
 

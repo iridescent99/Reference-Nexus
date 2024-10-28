@@ -30,15 +30,17 @@ export class ProgressBar extends DivComponent {
             .setClass(`${this.classPrefix}-progress-bar`)
         this.progress = new DivComponent( this.progressBar.el )
             .setClass( `${this.classPrefix}-progress` )
-            .setText(`${this.metric.calculateProgress()}%`)
+            // .setText(`${this.metric.calculateProgress()}%`)
+
+        // const progressText = this.progress.createChild("p", { text: `${this.metric.calculateProgress()}%`, cls: `${this.classPrefix}-progress-text`})
+
 
         const baseCSS = {
             width: `${this.metric.calculateProgress()}%`,
             background: this.metric.color
         }
 
-        this.progress.setStyle(this.metric.calculateProgress() > 95 ?
-                {...baseCSS, borderBottomRightRadius: "15px", borderTopRightRadius: "15px"} : baseCSS)
+        this.progress.setStyle(baseCSS)
 
     }
 
