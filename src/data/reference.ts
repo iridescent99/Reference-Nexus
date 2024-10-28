@@ -16,7 +16,6 @@ export class Reference implements IReference {
     meta: Metadata;
     pageCount: number|null = -1;
     chapterCount: number|null = -1;
-    links: ObsidianLink[] = [];
     image: string = "";
     url: string = "";
     notePath: string = "";
@@ -67,6 +66,28 @@ export class Reference implements IReference {
         }
         // @ts-ignore
         this.note = file;
+    }
+
+    json() {
+        let base: any = {
+            id: this.id,
+            title: this.title,
+            type: this.type,
+            authors: this.authors,
+            platform: this.platform,
+            metrics: this.metrics,
+            pageCount: this.pageCount,
+            chapterCount: this.chapterCount,
+            image: this.image
+        };
+        if (["article", "video", "course"].includes(this.type)) {
+            base = {
+                ...base,
+                url: this.url,
+                platform: this.platform
+            }
+        }
+        return base;
     }
 
     createMetric() {

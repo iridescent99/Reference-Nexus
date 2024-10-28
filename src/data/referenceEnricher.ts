@@ -40,7 +40,6 @@ export class ReferenceEnricher extends Modal {
 
     setReference( reference: IReference ): ReferenceEnricher {
 
-        console.log(reference)
         this.reference = reference;
         this.currentMetric = reference.metrics[0];
         if (this.reference.id == "CUSTXX") this.isCustom = true;

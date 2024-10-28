@@ -82,7 +82,8 @@ interface IReference {
     image: string;
     notePath: string;
     links: ObsidianLink[];
-    createMetric: () => void
+    json: () => any;
+    createMetric: () => void;
     deleteMetric: ( metric: IMetric ) => void;
     linkExists: ( id: string ) => boolean;
     updateProperty: ( key: string, value: string ) => void;

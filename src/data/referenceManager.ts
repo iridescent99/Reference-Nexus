@@ -33,7 +33,8 @@ export class ReferenceManager {
                 // @ts-ignore
                 await this.plugin.app.vault.read(file).then((data: any) => {
                     const items = JSON.parse(data).items;
-                    this.references = [...this.references, ...items.map((item: any) => new Reference(this.plugin, item))]
+                    this.references = [...this.references, ...items.map((item: any) => new Reference(this.plugin, item))];
+                    this.references.forEach((reference: IReference) => reference.syncNote())
                 })
             }
         }
@@ -63,7 +64,7 @@ export class ReferenceManager {
             if (!this.plugin.app.vault.getFolderByPath(this.plugin.settings.referencesLocation)) {
                 await this.plugin.app.vault.createFolder(this.plugin.settings.referencesLocation)
             }
-            return this.plugin.app.vault.create(referencePath, JSON.stringify({items: [reference]}));
+            return this.plugin.app.vault.create(referencePath, JSON.stringify({items: [reference.json()]}));
         } else {
             const file = this.plugin.app.vault.getFileByPath(referencePath);
             if (file) {
@@ -80,7 +81,7 @@ export class ReferenceManager {
     }
 
     getReferencesByType( type: ReferenceType ) {
-        return this.references.filter((reference: IReference) => reference.type === type);
+        return this.references.filter((reference: IReference) => reference.type === type).map((reference: IReference) => reference.json());
     }
 
     async updateJSON( type?: ReferenceType ) {
@@ -120,7 +121,7 @@ export class ReferenceManager {
     }
 
     clearLinks() {
-        this.references.forEach((reference: Reference) => reference.links = []);
+        this.references.forEach((reference: IReference) => reference.links = []);
     }
 
     public enrichReference( reference: IReference ): void {
