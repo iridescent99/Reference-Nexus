@@ -1,12 +1,13 @@
+import {useState} from "react";
 
 
-export function ReferenceStatistics() {
-
+export function ReferenceStatistics({ reference }: any) {
 
 
     return (
-        <div>
-            hoi!!!
+        <div className="reference-statistics">
+            {reference}
+            {" hoi"}
         </div>
     )
 

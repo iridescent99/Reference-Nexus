@@ -10,6 +10,8 @@ import {ReferenceEnricher} from "./data/referenceEnricher";
 import {ReferenceDashboard} from "./data/referenceDashboard";
 import {Tools} from "./utils/tools";
 export const VIEW_TYPE = "reference-nexus-view";
+import {createRoot} from "react-dom/client";
+import {ReferenceStatistics} from "./react/referenceStatistics";
 
 export default class ReferenceNexus extends Plugin {
 
@@ -88,8 +90,17 @@ export default class ReferenceNexus extends Plugin {
             if (file.extension === "md") this.debounceScan(file);
         })
 
+        this.registerMarkdownCodeBlockProcessor('nexus', (source, el, ctx) => {
+            this.renderReactComponent(el, source);
+            console.log(ctx);
+        })
 
+    }
 
+    renderReactComponent(containerEl: HTMLElement, query: string) {
+        console.log(containerEl)
+        // const root = createRoot(containerEl)
+        // root.render(<ReferenceStatistics />);
     }
 
     debounceScan( file: TFile ) {

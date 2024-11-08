@@ -30,7 +30,7 @@ const context = await esbuild.context({
 	banner: {
 		js: banner,
 	},
-	entryPoints: ["src/index.ts"],
+	entryPoints: ["src/index.tsx"],
 	bundle: true,
 	sourceRoot: "src",
 	external: [

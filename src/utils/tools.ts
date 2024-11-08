@@ -70,8 +70,15 @@ export class Tools {
             }
         });
 
-        return file;
+        return this.insertNexusBlock( file, reference );
 
+    }
+
+    async insertNexusBlock( file: TFile, reference: IReference ) {
+        const content = await this.plugin.app.vault.read( file );
+        const block = `\`\`\`nexus\n${reference.title}\n\`\`\``;
+        await this.plugin.app.vault.modify(file, content + "\n" + block);
+        return file;
     }
 
 
