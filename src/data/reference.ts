@@ -21,6 +21,7 @@ export class Reference implements IReference {
     notePath: string = "";
     plugin: ReferenceNexus;
     note: TFile;
+    noteId: string;
 
     constructor( plugin: ReferenceNexus, args: any ) {
         this.plugin = plugin;

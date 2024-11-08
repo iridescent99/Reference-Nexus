@@ -31,8 +31,7 @@ export class ReferenceCard extends Component {
         // TODO: linear gradient for progress color
 
         this.containerEl.on('dblclick', () => {
-            this.view.plugin.referenceDashboard.setReference( this.data )
-                .open();
+            this.view.plugin.tools.openReferenceNote( this.data )
         })
         this.containerEl.setClass("reference-container");
         const btnContainer = this.containerEl.createChild("div", {cls: "reference-button-container"})

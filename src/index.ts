@@ -88,6 +88,8 @@ export default class ReferenceNexus extends Plugin {
             if (file.extension === "md") this.debounceScan(file);
         })
 
+
+
     }
 
     debounceScan( file: TFile ) {
@@ -118,8 +120,6 @@ export default class ReferenceNexus extends Plugin {
             await this.app.workspace.revealLeaf(this.referenceLeaf);
         }
     }
-
-
 
     onunload() {
         // TODO: close leaf properly

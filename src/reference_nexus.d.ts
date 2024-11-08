@@ -70,6 +70,7 @@ interface IReference {
     [key: string]: any;
     plugin: ReferenceNexus;
     id: string;
+    noteId: string;
     title: string;
     authors: string[];
     meta:Metadata;
@@ -81,7 +82,6 @@ interface IReference {
     note: TFile;
     image: string;
     notePath: string;
-    links: ObsidianLink[];
     json: () => any;
     createMetric: () => void;
     deleteMetric: ( metric: IMetric ) => void;
